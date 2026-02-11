@@ -1,0 +1,36 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@siemens/prettier-config':
+        specifier: 4.1.0
+        version: 4.1.0(prettier@3.8.1)
+      prettier:
+        specifier: 3.8.1
+        version: 3.8.1
+
+packages:
+
+  '@siemens/prettier-config@4.1.0':
+    resolution: {integrity: sha512-VxWsqtRQXks3eGEnINgvU+fSQl+bLgnIJK62kcz6C5nVAMroRwFKfktysvyVwvWiWY98k1Mt9TX1nTotnTE9yA==}
+    peerDependencies:
+      prettier: ^3.0.0
+
+  prettier@3.8.1:
+    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
+    engines: {node: '>=14'}
+    hasBin: true
+
+snapshots:
+
+  '@siemens/prettier-config@4.1.0(prettier@3.8.1)':
+    dependencies:
+      prettier: 3.8.1
+
+  prettier@3.8.1: {}

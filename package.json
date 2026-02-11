@@ -1,0 +1,18 @@
+{
+  "name": "osteohub",
+  "version": "0.0.0",
+  "type": "module",
+  "author": "loris@janner.dev",
+  "description": "OsteoHub ist eine Wissens- und Krankheitsdatenbank für Osteopathie-Studierende.",
+  "private": true,
+  "scripts": {
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write ."
+  },
+  "packageManager": "pnpm@10.28.2",
+  "prettier": "@siemens/prettier-config",
+  "devDependencies": {
+    "@siemens/prettier-config": "4.1.0",
+    "prettier": "3.8.1"
+  }
+}
