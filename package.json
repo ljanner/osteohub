@@ -12,9 +12,10 @@
     "frontend:test": "pnpm --filter ./frontend test",
     "frontend:test:headless": "pnpm --filter ./frontend test:headless --watch=false",
     "frontend:lint:all": "pnpm --filter ./frontend lint:all",
+    "backend:lint": "pnpm --filter ./backend lint",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "lint:all": "pnpm prettier:check && pnpm frontend:lint:all",
+    "lint:all": "pnpm prettier:check && pnpm frontend:lint:all && pnpm backend:lint",
     "build:all": "pnpm frontend:build:prod"
   },
   "packageManager": "pnpm@10.28.2",

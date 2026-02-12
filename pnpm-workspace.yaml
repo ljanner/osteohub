@@ -4,4 +4,7 @@ packages:
 
 onlyBuiltDependencies:
   - edgedriver
+  - esbuild
   - geckodriver
+  - sharp
+  - workerd

@@ -1,0 +1,28 @@
+{
+  "name": "osteohub",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "studio": "pnpm drizzle-kit studio",
+    "migrationsGenerate": "npx drizzle-kit generate",
+    "migrationsApplyLocal": "wrangler d1 migrations apply DB --local",
+    "migrationsApplyRemote": "wrangler d1 migrations apply DB --remote",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.0",
+    "drizzle-orm": "^0.45.1",
+    "hono": "^4.11.9"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9",
+    "tsx": "^4.21.0",
+    "wrangler": "^4.4.0"
+  },
+  "private": true,
+  "packageManager": "pnpm@10.28.2"
+}
