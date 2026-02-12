@@ -10,10 +10,12 @@
     "frontend:build": "pnpm --filter ./frontend build",
     "frontend:build:prod": "pnpm --filter ./frontend build:prod",
     "frontend:test": "pnpm --filter ./frontend test",
+    "frontend:test:headless": "pnpm --filter ./frontend test:headless --watch=false",
     "frontend:lint:all": "pnpm --filter ./frontend lint:all",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "lint:all": "pnpm prettier:check && pnpm frontend:lint:all"
+    "lint:all": "pnpm prettier:check && pnpm frontend:lint:all",
+    "build:all": "pnpm frontend:build:prod"
   },
   "packageManager": "pnpm@10.28.2",
   "prettier": "@siemens/prettier-config",

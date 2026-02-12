@@ -13,7 +13,7 @@ const tsConfig = typescriptEslint.config({
   files: ['**/*.ts'],
   languageOptions: {
     parserOptions: {
-      project: ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'e2e/tsconfig.json'],
+      project: ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json'],
       tsconfigRootDir: __dirname,
     },
   },
@@ -40,6 +40,14 @@ const tsConfig = typescriptEslint.config({
 const templateConfig = typescriptEslint.config({
   extends: [...angularTemplateConfig],
   files: ['**/*.html'],
+  rules: {
+    '@angular-eslint/template/elements-content': [
+      'error',
+      {
+        allowList: ['siHeaderLogo'],
+      },
+    ],
+  },
 });
 
 export default typescriptEslint.config(...tsConfig, ...templateConfig);

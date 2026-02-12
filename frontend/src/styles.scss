@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+// Use Element Theme
+@use '@siemens/element-theme/src/theme';
+
+// Use Element components
+@use '@siemens/element-ng/element-ng';
