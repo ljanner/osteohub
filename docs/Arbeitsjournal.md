@@ -10,3 +10,4 @@
 | 09.02.2026 | Deployment-Strategien evaluiert (Render, DigitalOcean Functions). Angular als self-contained App strukturiert. Express + SQLite Backend prototypisch aufgebaut. | 5 Stunden |
 | 10.02.2026 | Cloudflare Workers Exploration. Hono und Drizzle Prototype implementiert. Deployment-Flow erfolgreich getestet.                                                 | 5 Stunden |
 | 11.02.2026 | Clean Wipe und Neuaufsetzung der Architektur. Gute Ansätze übernommen, Komplexität reduziert. Figma UI Prototyping.                                             | 5 Stunden |
+| 12.02.2026 | Frontend und GitHub workflows aufgesetzt                                                                                                                        | 2 Stunden |
