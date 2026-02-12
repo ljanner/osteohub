@@ -6,13 +6,22 @@
   "description": "OsteoHub ist eine Wissens- und Krankheitsdatenbank für Osteopathie-Studierende.",
   "private": true,
   "scripts": {
+    "frontend:start": "pnpm --filter ./frontend start",
+    "frontend:build": "pnpm --filter ./frontend build",
+    "frontend:build:prod": "pnpm --filter ./frontend build:prod",
+    "frontend:test": "pnpm --filter ./frontend test",
+    "frontend:lint:all": "pnpm --filter ./frontend lint:all",
     "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "lint:all": "pnpm prettier:check && pnpm frontend:lint:all"
   },
   "packageManager": "pnpm@10.28.2",
   "prettier": "@siemens/prettier-config",
   "devDependencies": {
+    "@siemens/eslint-config-typescript": "4.1.0",
     "@siemens/prettier-config": "4.1.0",
-    "prettier": "3.8.1"
+    "eslint": "9.39.2",
+    "prettier": "3.8.1",
+    "typescript-eslint": "8.55.0"
   }
 }
