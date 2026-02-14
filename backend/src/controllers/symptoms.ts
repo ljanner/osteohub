@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 
-import { symptoms } from '../db/schema';
+import { relations, symptoms } from '../db/schema';
 
 type Bindings = {
   DB: D1Database;
@@ -10,7 +10,7 @@ type Bindings = {
 const symptomsController = new Hono<{ Bindings: Bindings }>();
 
 symptomsController.get('/', async c => {
-  const db = drizzle(c.env.DB);
+  const db = drizzle(c.env.DB, { relations });
   const symptomsList = await db.select().from(symptoms).all();
   return c.json({
     ok: true,

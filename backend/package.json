@@ -6,20 +6,22 @@
     "start": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "studio": "pnpm drizzle-kit studio",
-    "migrationsGenerate": "npx drizzle-kit generate",
-    "migrationsApplyLocal": "wrangler d1 migrations apply DB --local",
-    "migrationsApplyRemote": "wrangler d1 migrations apply DB --remote",
+    "db:generate": "npx drizzle-kit generate && node ./scripts/flatten-drizzle-migrations.mjs",
+    "db:apply:local": "node ./scripts/flatten-drizzle-migrations.mjs && wrangler d1 migrations apply DB --local",
+    "db:apply:remote": "node ./scripts/flatten-drizzle-migrations.mjs && wrangler d1 migrations apply DB --remote",
+    "db:seed:local": "wrangler d1 execute DB --local --file ./seeds/seed_lookup_tables.sql",
+    "db:seed:remote": "wrangler d1 execute DB --remote --file ./seeds/seed_lookup_tables.sql",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "dotenv": "^17.3.0",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "1.0.0-beta.15-859cf75",
     "hono": "^4.11.9"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.9",
+    "drizzle-kit": "1.0.0-beta.15-859cf75",
     "tsx": "^4.21.0",
     "wrangler": "^4.4.0"
   },

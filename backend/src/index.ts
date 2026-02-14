@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
+import diseases from './controllers/diseases';
 import filters from './controllers/filters';
 import symptoms from './controllers/symptoms';
 
@@ -27,6 +28,7 @@ app.use(
 );
 
 app.route('/filters', filters);
+app.route('/diseases', diseases);
 app.route('/symptoms', symptoms);
 
 export default app;

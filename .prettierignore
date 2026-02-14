@@ -1,2 +1,4 @@
 pnpm-lock.yaml
 backend/worker-configuration.d.ts
+backend/drizzle/*
+backend/drizzle-flat/*
