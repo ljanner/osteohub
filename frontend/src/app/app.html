@@ -1,7 +1,7 @@
 <si-side-panel
   #sidePanel
   class="d-flex si-layout-fixed-height h-100"
-  size="wide"
+  size="extended"
   mode="scroll"
   disableBackdrop
   [collapsed]="collapsed()"
@@ -28,8 +28,9 @@
     </main>
   </div>
 
-  <si-side-panel-content displayMode="overlay" heading="Krankheitsinformationen">
+  <si-side-panel-content displayMode="overlay" [heading]="sidePanelService.heading()">
     <div class="px-6">
+      {{ filters() | json }}
       <si-empty-state
         icon="element-info"
         heading="Kein Krankheitsprofil ausgewählt"
