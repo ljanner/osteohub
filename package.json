@@ -12,6 +12,7 @@
     "frontend:test": "pnpm --filter ./frontend test",
     "frontend:test:headless": "pnpm --filter ./frontend test:headless --watch=false",
     "frontend:lint:all": "pnpm --filter ./frontend lint:all",
+    "backend:start": "pnpm --filter ./backend start",
     "backend:lint": "pnpm --filter ./backend lint",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",

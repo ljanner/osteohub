@@ -1,7 +1,9 @@
-import { drizzle } from 'drizzle-orm/d1';
+import 'dotenv/config';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 
-import { symptoms } from './db/schema';
+import filters from './controllers/filters';
+import symptoms from './controllers/symptoms';
 
 type Bindings = {
   DB: D1Database;
@@ -9,13 +11,22 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.get('/symptoms', async c => {
-  const db = drizzle(c.env.DB);
-  const symptomsList = await db.select().from(symptoms).all();
-  return c.json({
-    ok: true,
-    data: symptomsList
-  });
-});
+const allowedOrigins = ['https://osteohub.ch', 'https://www.osteohub.ch'];
+if (process.env.CONFIGURATION === 'development') {
+  allowedOrigins.push('http://localhost:4200');
+}
+
+app.use(
+  '*',
+  cors({
+    origin: allowedOrigins,
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400
+  })
+);
+
+app.route('/filters', filters);
+app.route('/symptoms', symptoms);
 
 export default app;
