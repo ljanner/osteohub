@@ -44,8 +44,8 @@
     {
       "binding": "DB",
       "database_name": "osteohub-d1",
-      "database_id": "4504bf25-313c-4b13-a146-05a8be738db8",
-      "migrations_dir": "drizzle"
+      "database_id": "d6a5479d-1edd-4b8f-b19b-08c8015b0d78",
+      "migrations_dir": "drizzle-flat"
     }
   ]
   // "ai": {

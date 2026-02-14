@@ -1,0 +1,769 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "id": "61ead177-242a-43b9-a2c7-e462d77f444a",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "name": "body_region",
+      "entityType": "tables"
+    },
+    {
+      "name": "body_system",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease_body_region",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease_body_system",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease_osteopathic_model",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease_symptom",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease_vindicate_category",
+      "entityType": "tables"
+    },
+    {
+      "name": "disease",
+      "entityType": "tables"
+    },
+    {
+      "name": "osteopathic_model",
+      "entityType": "tables"
+    },
+    {
+      "name": "symptom",
+      "entityType": "tables"
+    },
+    {
+      "name": "vindicate_category",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "body_region"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "body_region"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "body_system"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "body_system"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diseaseId",
+      "entityType": "columns",
+      "table": "disease_body_region"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "bodyRegionId",
+      "entityType": "columns",
+      "table": "disease_body_region"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diseaseId",
+      "entityType": "columns",
+      "table": "disease_body_system"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "bodySystemId",
+      "entityType": "columns",
+      "table": "disease_body_system"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diseaseId",
+      "entityType": "columns",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "osteopathicModelId",
+      "entityType": "columns",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diseaseId",
+      "entityType": "columns",
+      "table": "disease_symptom"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "symptomId",
+      "entityType": "columns",
+      "table": "disease_symptom"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diseaseId",
+      "entityType": "columns",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "vindicateCategoryId",
+      "entityType": "columns",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "icd",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "description",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "frequency",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "etiology",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "pathogenesis",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "redFlags",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "diagnostics",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "therapy",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "prognosis",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "osteopathicTreatment",
+      "entityType": "columns",
+      "table": "disease"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "osteopathic_model"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "osteopathic_model"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "symptom"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "symptom"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": true,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "vindicate_category"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "vindicate_category"
+    },
+    {
+      "columns": [
+        "diseaseId"
+      ],
+      "tableTo": "disease",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_body_region_diseaseId_disease_id_fk",
+      "entityType": "fks",
+      "table": "disease_body_region"
+    },
+    {
+      "columns": [
+        "bodyRegionId"
+      ],
+      "tableTo": "body_region",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_body_region_bodyRegionId_body_region_id_fk",
+      "entityType": "fks",
+      "table": "disease_body_region"
+    },
+    {
+      "columns": [
+        "diseaseId"
+      ],
+      "tableTo": "disease",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_body_system_diseaseId_disease_id_fk",
+      "entityType": "fks",
+      "table": "disease_body_system"
+    },
+    {
+      "columns": [
+        "bodySystemId"
+      ],
+      "tableTo": "body_system",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_body_system_bodySystemId_body_system_id_fk",
+      "entityType": "fks",
+      "table": "disease_body_system"
+    },
+    {
+      "columns": [
+        "diseaseId"
+      ],
+      "tableTo": "disease",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_osteopathic_model_diseaseId_disease_id_fk",
+      "entityType": "fks",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "columns": [
+        "osteopathicModelId"
+      ],
+      "tableTo": "osteopathic_model",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_osteopathic_model_osteopathicModelId_osteopathic_model_id_fk",
+      "entityType": "fks",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "columns": [
+        "diseaseId"
+      ],
+      "tableTo": "disease",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_symptom_diseaseId_disease_id_fk",
+      "entityType": "fks",
+      "table": "disease_symptom"
+    },
+    {
+      "columns": [
+        "symptomId"
+      ],
+      "tableTo": "symptom",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_symptom_symptomId_symptom_id_fk",
+      "entityType": "fks",
+      "table": "disease_symptom"
+    },
+    {
+      "columns": [
+        "diseaseId"
+      ],
+      "tableTo": "disease",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_vindicate_category_diseaseId_disease_id_fk",
+      "entityType": "fks",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "columns": [
+        "vindicateCategoryId"
+      ],
+      "tableTo": "vindicate_category",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_disease_vindicate_category_vindicateCategoryId_vindicate_category_id_fk",
+      "entityType": "fks",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "columns": [
+        "diseaseId",
+        "bodyRegionId"
+      ],
+      "nameExplicit": false,
+      "name": "disease_body_region_pk",
+      "entityType": "pks",
+      "table": "disease_body_region"
+    },
+    {
+      "columns": [
+        "diseaseId",
+        "bodySystemId"
+      ],
+      "nameExplicit": false,
+      "name": "disease_body_system_pk",
+      "entityType": "pks",
+      "table": "disease_body_system"
+    },
+    {
+      "columns": [
+        "diseaseId",
+        "osteopathicModelId"
+      ],
+      "nameExplicit": false,
+      "name": "disease_osteopathic_model_pk",
+      "entityType": "pks",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "columns": [
+        "diseaseId",
+        "symptomId"
+      ],
+      "nameExplicit": false,
+      "name": "disease_symptom_pk",
+      "entityType": "pks",
+      "table": "disease_symptom"
+    },
+    {
+      "columns": [
+        "diseaseId",
+        "vindicateCategoryId"
+      ],
+      "nameExplicit": false,
+      "name": "disease_vindicate_category_pk",
+      "entityType": "pks",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "body_region_pk",
+      "table": "body_region",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "body_system_pk",
+      "table": "body_system",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "disease_pk",
+      "table": "disease",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "osteopathic_model_pk",
+      "table": "osteopathic_model",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "symptom_pk",
+      "table": "symptom",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "vindicate_category_pk",
+      "table": "vindicate_category",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "diseaseId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_body_region_disease_id_idx",
+      "entityType": "indexes",
+      "table": "disease_body_region"
+    },
+    {
+      "columns": [
+        {
+          "value": "bodyRegionId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_body_region_body_region_id_idx",
+      "entityType": "indexes",
+      "table": "disease_body_region"
+    },
+    {
+      "columns": [
+        {
+          "value": "diseaseId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_body_system_disease_id_idx",
+      "entityType": "indexes",
+      "table": "disease_body_system"
+    },
+    {
+      "columns": [
+        {
+          "value": "bodySystemId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_body_system_body_system_id_idx",
+      "entityType": "indexes",
+      "table": "disease_body_system"
+    },
+    {
+      "columns": [
+        {
+          "value": "diseaseId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_osteopathic_model_disease_id_idx",
+      "entityType": "indexes",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "columns": [
+        {
+          "value": "osteopathicModelId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_osteopathic_model_osteopathic_model_id_idx",
+      "entityType": "indexes",
+      "table": "disease_osteopathic_model"
+    },
+    {
+      "columns": [
+        {
+          "value": "diseaseId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_symptom_disease_id_idx",
+      "entityType": "indexes",
+      "table": "disease_symptom"
+    },
+    {
+      "columns": [
+        {
+          "value": "symptomId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_symptom_symptom_id_idx",
+      "entityType": "indexes",
+      "table": "disease_symptom"
+    },
+    {
+      "columns": [
+        {
+          "value": "diseaseId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_vindicate_category_disease_id_idx",
+      "entityType": "indexes",
+      "table": "disease_vindicate_category"
+    },
+    {
+      "columns": [
+        {
+          "value": "vindicateCategoryId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "disease_vindicate_category_vindicate_category_id_idx",
+      "entityType": "indexes",
+      "table": "disease_vindicate_category"
+    }
+  ],
+  "renames": []
+}
