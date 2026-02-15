@@ -11,7 +11,7 @@ import {
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 import { catchError, forkJoin, of } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import type {
   BodyRegion,
   BodySystem,
@@ -19,8 +19,8 @@ import type {
   VindicateCategory,
   OsteopathicModel,
   Symptom,
-} from '../../models/types';
-import { FilterStateService } from '../../services/filter-state.service';
+} from '../../../../models/types';
+import { FilterStateService } from '../../../../services/filter-state.service';
 
 @Component({
   selector: 'app-filter-panel',
@@ -39,7 +39,7 @@ export class FilterPanelComponent implements OnInit {
   private filterStateService = inject(FilterStateService);
   private destroyRef = inject(DestroyRef);
 
-  readonly filtersChanged = output<FilterSelection>();
+  readonly filtersChanged = output<void>();
 
   protected bodyRegionsOptions: SelectItem<number>[] = [];
   protected bodyRegionsSelected: number[] = [];
@@ -197,6 +197,6 @@ export class FilterPanelComponent implements OnInit {
     };
 
     this.filterStateService.setSelection(selection);
-    this.filtersChanged.emit(selection);
+    this.filtersChanged.emit();
   }
 }
