@@ -16,7 +16,7 @@
   </button>
 </div>
 <div class="mt-8 row g-5">
-  @for (disease of diseases(); track $index) {
+  @for (disease of diseases(); track disease.id) {
     <app-disease-card
       class="col-12"
       [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'"

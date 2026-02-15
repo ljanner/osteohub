@@ -1,7 +1,8 @@
 /* eslint-disable @angular-eslint/no-experimental */
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { elementFilter, elementInfo } from '@siemens/element-icons';
 import { SiEmptyStateComponent } from '@siemens/element-ng/empty-state';
@@ -38,6 +39,7 @@ export class OverviewComponent {
   private toastNotificationService = inject(SiToastNotificationService);
   private sidePanelService = inject(SiSidePanelService);
   private filterStateService = inject(FilterStateService);
+  private destroyRef = inject(DestroyRef);
   protected sidePanelOpen = this.sidePanelService.isOpen();
 
   readonly filterSidePanelContent = viewChild.required('filter', { read: CdkPortal });
@@ -58,8 +60,12 @@ export class OverviewComponent {
 
   constructor() {
     this.loadDiseases();
-    this.searchValue.valueChanges.subscribe(() => this.filterOverview(this.searchValue.value));
-    this.sidePanelService.isOpen$.subscribe((isOpen) => (this.sidePanelOpen = isOpen));
+    this.searchValue.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.filterOverview(this.searchValue.value));
+    this.sidePanelService.isOpen$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((isOpen) => (this.sidePanelOpen = isOpen));
   }
 
   loadDiseases(): void {

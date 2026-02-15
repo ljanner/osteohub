@@ -3,19 +3,19 @@
   <h2 class="mb-2">{{ diseaseValue.name }}</h2>
   <p class="text-secondary mb-4">ICD: {{ diseaseValue.icd }}</p>
   <p class="text-secondary mb-4">
-    @for (bodyRegion of diseaseValue.bodyRegions; track $index) {
+    @for (bodyRegion of diseaseValue.bodyRegions; track bodyRegion.id) {
       {{ bodyRegion.name }}{{ $last ? '' : ',' }}
     }
     &bull;
-    @for (bodySystem of diseaseValue.bodySystems; track $index) {
+    @for (bodySystem of diseaseValue.bodySystems; track bodySystem.id) {
       {{ bodySystem.name }}{{ $last ? '' : ',' }}
     }
   </p>
   <div class="d-flex flex-wrap gap-4 my-4">
-    @for (osteopathicModel of diseaseValue.osteopathicModels; track $index) {
+    @for (osteopathicModel of diseaseValue.osteopathicModels; track osteopathicModel.id) {
       <span class="badge bg-success-emphasis">{{ osteopathicModel.name }}</span>
     }
-    @for (vindicateCategory of diseaseValue.vindicateCategories; track $index) {
+    @for (vindicateCategory of diseaseValue.vindicateCategories; track vindicateCategory.id) {
       <span class="badge bg-info-emphasis">{{ vindicateCategory.name }}</span>
     }
   </div>
