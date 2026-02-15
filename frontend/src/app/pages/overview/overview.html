@@ -39,7 +39,7 @@
 <ng-template #filter cdkPortal>
   <si-side-panel-content heading="Filter" displayMode="overlay">
     <div class="p-6 w-100">
-      <app-filter-panel (filtersChanged)="filterOverview($event)" />
+      <app-filter-panel (filtersChanged)="filterOverview()" />
     </div>
   </si-side-panel-content>
 </ng-template>
