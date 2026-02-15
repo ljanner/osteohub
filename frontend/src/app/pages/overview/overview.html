@@ -10,10 +10,32 @@
     type="button"
     class="btn btn-icon btn-tertiary"
     aria-label="filter"
-    (click)="openFilters()"
+    (click)="openSidePanelFilter()"
   >
     <si-icon [icon]="icons.elementFilter" />
   </button>
 </div>
-<p>overview works!</p>
-<p>{{ sidePanelService.selectedFilters | json }}</p>
+<div class="mt-8 row g-5">
+  @for (disease of diseases; track $index) {
+    <app-disease-card
+      class="col-12"
+      [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'"
+      [disease]="disease"
+      (click)="openSidePanelDiseaseInformation(disease)"
+    />
+  }
+</div>
+
+<ng-template #filter cdkPortal>
+  <si-side-panel-content heading="Filter" displayMode="overlay">
+    <div class="p-6 w-100">
+      <app-filter-panel (filtersChanged)="filterOverview($event)" />
+    </div>
+  </si-side-panel-content>
+</ng-template>
+
+<ng-template #diseaseInformation cdkPortal>
+  <si-side-panel-content heading="Krankheitsinformationen" displayMode="overlay">
+    <div class="p-6">Different content</div>
+  </si-side-panel-content>
+</ng-template>

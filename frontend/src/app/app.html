@@ -4,8 +4,7 @@
   size="extended"
   mode="scroll"
   disableBackdrop
-  [collapsed]="collapsed()"
-  (closed)="close()"
+  [collapsed]="true"
 >
   <div class="has-navbar-fixed-top si-layout-fixed-height h-100">
     <si-application-header>
@@ -27,17 +26,6 @@
       <router-outlet />
     </main>
   </div>
-
-  <si-side-panel-content displayMode="overlay" [heading]="sidePanelService.heading()">
-    <div class="px-6">
-      {{ filters() | json }}
-      <si-empty-state
-        icon="element-info"
-        heading="Kein Krankheitsprofil ausgewählt"
-        content="Bitte wählen Sie ein Krankheitsprofil aus der Übersicht, um die Details anzuzeigen."
-      />
-    </div>
-  </si-side-panel-content>
 </si-side-panel>
 
 <ng-template #settings>
