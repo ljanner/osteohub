@@ -12,8 +12,9 @@ import { SiToastNotificationService } from '@siemens/element-ng/toast-notificati
 
 import { environment } from '../../../environments/environment';
 import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
-import { FilterPanelComponent } from '../../components/filter-panel/filter-panel';
-import type { Disease, DiseaseExtended, FilterSelection } from '../../models/types';
+import type { Disease, DiseaseExtended } from '../../models/types';
+import { FilterStateService } from '../../services/filter-state.service';
+import { FilterPanelComponent } from './components/filter-panel/filter-panel';
 
 @Component({
   selector: 'app-overview',
@@ -34,6 +35,7 @@ export class OverviewComponent {
   private http = inject(HttpClient);
   private toastNotificationService = inject(SiToastNotificationService);
   private sidePanelService = inject(SiSidePanelService);
+  private filterStateService = inject(FilterStateService);
   protected sidePanelOpen = this.sidePanelService.isOpen();
 
   readonly filterSidePanelContent = viewChild.required('filter', { read: CdkPortal });
@@ -49,11 +51,11 @@ export class OverviewComponent {
     elementInfo,
   });
 
-  searchValue = new FormControl('');
+  searchValue = new FormControl('', { nonNullable: true });
 
   constructor() {
     this.loadDiseases();
-    this.searchValue.valueChanges.subscribe(() => console.log(this.searchValue.value));
+    this.searchValue.valueChanges.subscribe(() => this.filterOverview(this.searchValue.value));
     this.sidePanelService.isOpen$.subscribe((isOpen) => (this.sidePanelOpen = isOpen));
   }
 
@@ -142,8 +144,9 @@ export class OverviewComponent {
     });
   }
 
-  filterOverview(event: FilterSelection): void {
-    console.log('Filter overview with', event);
+  filterOverview(searchTerm?: string): void {
+    const filterSelection = this.filterStateService.selection();
+    console.log('Filter overview with', filterSelection, 'and search term', searchTerm);
   }
 
   openSidePanelFilter(): void {
