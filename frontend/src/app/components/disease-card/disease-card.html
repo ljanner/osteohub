@@ -5,11 +5,11 @@
       <div class="d-flex flex-column gap-2">
         <span class="si-h4">{{ disease.name }}</span>
         <span class="text-secondary si-body text-truncate">
-          @for (region of disease.bodyRegions; track $index) {
+          @for (region of disease.bodyRegions; track region.id) {
             {{ region.name }}{{ $last ? '' : ',' }}
           }
           &bull;
-          @for (system of disease.bodySystems; track $index) {
+          @for (system of disease.bodySystems; track system.id) {
             {{ system.name }}{{ $last ? '' : ',' }}
           }
         </span>
