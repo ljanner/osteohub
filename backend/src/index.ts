@@ -2,9 +2,12 @@ import 'dotenv/config';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
-import diseases from './controllers/diseases';
-import filters from './controllers/filters';
-import symptoms from './controllers/symptoms';
+import bodyRegionController from './controllers/body-region';
+import bodySystemController from './controllers/body-system';
+import diseaseController from './controllers/disease';
+import osteopathicModelController from './controllers/osteopathic-model';
+import symptomsController from './controllers/symptom';
+import vindicateCategoryController from './controllers/vindicate-category';
 
 type Bindings = {
   DB: D1Database;
@@ -27,8 +30,11 @@ app.use(
   })
 );
 
-app.route('/filters', filters);
-app.route('/diseases', diseases);
-app.route('/symptoms', symptoms);
+app.route('/disease', diseaseController);
+app.route('/body-region', bodyRegionController);
+app.route('/body-system', bodySystemController);
+app.route('/osteopathic-model', osteopathicModelController);
+app.route('/vindicate-category', vindicateCategoryController);
+app.route('/symptom', symptomsController);
 
 export default app;

@@ -7,9 +7,9 @@ type Bindings = {
   DB: D1Database;
 };
 
-const diseasesController = new Hono<{ Bindings: Bindings }>();
+const diseaseController = new Hono<{ Bindings: Bindings }>();
 
-diseasesController.get('/', async c => {
+diseaseController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
   const diseasesList = await db.query.diseases.findMany({
     columns: {
@@ -51,7 +51,7 @@ diseasesController.get('/', async c => {
   });
 });
 
-diseasesController.get('/:id', async c => {
+diseaseController.get('/:id', async c => {
   const db = drizzle(c.env.DB, { relations });
   const id = Number.parseInt(c.req.param('id'), 10);
 
@@ -94,4 +94,4 @@ diseasesController.get('/:id', async c => {
   });
 });
 
-export default diseasesController;
+export default diseaseController;
