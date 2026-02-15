@@ -10,7 +10,6 @@ const defaultFilterSelection: FilterSelection = {
   symptoms: [],
 };
 
-
 @Injectable({ providedIn: 'root' })
 export class FilterStateService {
   readonly selection = signal<FilterSelection>(defaultFilterSelection);
