@@ -45,10 +45,7 @@ diseaseController.get('/', async c => {
     }
   });
 
-  return c.json({
-    ok: true,
-    data: diseasesList
-  });
+  return c.json(diseasesList);
 });
 
 diseaseController.get('/:id', async c => {
@@ -58,7 +55,6 @@ diseaseController.get('/:id', async c => {
   if (Number.isNaN(id)) {
     return c.json(
       {
-        ok: false,
         error: 'Invalid disease id'
       },
       400
@@ -81,17 +77,13 @@ diseaseController.get('/:id', async c => {
   if (!disease) {
     return c.json(
       {
-        ok: false,
         error: 'Disease not found'
       },
       404
     );
   }
 
-  return c.json({
-    ok: true,
-    data: disease
-  });
+  return c.json(disease);
 });
 
 export default diseaseController;

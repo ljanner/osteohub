@@ -12,10 +12,7 @@ const osteopathicModelController = new Hono<{ Bindings: Bindings }>();
 osteopathicModelController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
   const osteopathicModelsList = await db.query.osteopathicModels.findMany();
-  return c.json({
-    ok: true,
-    data: osteopathicModelsList
-  });
+  return c.json(osteopathicModelsList);
 });
 
 export default osteopathicModelController;
