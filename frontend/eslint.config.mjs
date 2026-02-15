@@ -47,6 +47,12 @@ const templateConfig = typescriptEslint.config({
         allowList: ['siHeaderLogo'],
       },
     ],
+    '@angular-eslint/template/no-duplicate-attributes': [
+      'error',
+      {
+        ignore: ['class'],
+      },
+    ],
   },
 });
 

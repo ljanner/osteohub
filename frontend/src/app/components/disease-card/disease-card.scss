@@ -1,0 +1,20 @@
+:host {
+  display: flex;
+}
+
+:host si-card {
+  display: flex;
+  width: 100%;
+}
+
+:host [body] {
+  width: 100%;
+}
+
+si-card:hover {
+  cursor: pointer;
+}
+
+.badge {
+  margin-inline: 0;
+}

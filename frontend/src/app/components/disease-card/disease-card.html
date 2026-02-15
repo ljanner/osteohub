@@ -1,0 +1,28 @@
+<si-card>
+  <div class="p-6 pt-5" body>
+    @let disease = this.disease();
+    <div class="d-flex flex-column gap-4">
+      <div class="d-flex flex-column gap-2">
+        <span class="si-h4">{{ disease.name }}</span>
+        <span class="text-secondary si-body text-truncate">
+          @for (region of disease.bodyRegions; track $index) {
+            {{ region.name }}{{ $last ? '' : ',' }}
+          }
+          &bull;
+          @for (system of disease.bodySystems; track $index) {
+            {{ system.name }}{{ $last ? '' : ',' }}
+          }
+        </span>
+      </div>
+      <span class="text-truncate">{{ disease.description }}</span>
+      <div class="d-flex gap-2 flex-wrap">
+        @for (badge of getVisibleBadges(); track badge.key) {
+          <span class="badge" [class]="badge.className">{{ badge.name }}</span>
+        }
+        @if (getHiddenBadgeCount() > 0) {
+          <span class="badge bg-secondary">+{{ getHiddenBadgeCount() }}</span>
+        }
+      </div>
+    </div>
+  </div>
+</si-card>
