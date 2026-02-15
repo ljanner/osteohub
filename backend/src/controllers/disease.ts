@@ -13,35 +13,16 @@ diseaseController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
   const diseasesList = await db.query.diseases.findMany({
     columns: {
+      id: true,
       name: true,
       description: true
     },
     with: {
-      bodyRegions: {
-        columns: {
-          name: true
-        }
-      },
-      bodySystems: {
-        columns: {
-          name: true
-        }
-      },
-      vindicateCategories: {
-        columns: {
-          name: true
-        }
-      },
-      osteopathicModels: {
-        columns: {
-          name: true
-        }
-      },
-      symptoms: {
-        columns: {
-          name: true
-        }
-      }
+      bodyRegions: true,
+      bodySystems: true,
+      vindicateCategories: true,
+      osteopathicModels: true,
+      symptoms: true
     }
   });
 

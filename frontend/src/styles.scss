@@ -3,3 +3,8 @@
 
 // Use Element components
 @use '@siemens/element-ng/element-ng';
+
+.badge {
+  margin-inline: 0;
+  max-inline-size: none;
+}

@@ -12,6 +12,7 @@ import { SiToastNotificationService } from '@siemens/element-ng/toast-notificati
 
 import { environment } from '../../../environments/environment';
 import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
+import { DiseaseDetailsComponent } from '../../components/disease-details/disease-details';
 import type { Disease, DiseaseExtended } from '../../models/types';
 import { FilterStateService } from '../../services/filter-state.service';
 import { FilterPanelComponent } from './components/filter-panel/filter-panel';
@@ -27,6 +28,7 @@ import { FilterPanelComponent } from './components/filter-panel/filter-panel';
     SiEmptyStateComponent,
     ReactiveFormsModule,
     PortalModule,
+    DiseaseDetailsComponent,
   ],
   templateUrl: './overview.html',
   styleUrl: './overview.scss',
@@ -45,6 +47,7 @@ export class OverviewComponent {
 
   protected readonly diseases = signal<Disease[]>([]);
   protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
+  private readonly activePanel = signal<'filter' | 'disease' | null>(null);
 
   icons = addIcons({
     elementFilter,
@@ -62,76 +65,7 @@ export class OverviewComponent {
   loadDiseases(): void {
     this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
       next: (response) => {
-        // TODO: Add disease data in backend
-        this.diseases.set([
-          {
-            id: 1,
-            name: 'Lumbar Disc Herniation',
-            description:
-              'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
-            bodyRegions: [
-              { id: 1, name: 'Lumbar Spine' },
-              { id: 2, name: 'Lower Extremity' },
-            ],
-            bodySystems: [
-              { id: 1, name: 'Musculoskeletal System' },
-              { id: 2, name: 'Nervous System' },
-            ],
-            vindicateCategories: [
-              { id: 1, name: 'Traumatic' },
-              { id: 2, name: 'Degenerative' },
-            ],
-            osteopathicModels: [
-              { id: 1, name: 'Biomechanical Model' },
-              { id: 2, name: 'Neurological Model' },
-            ],
-            symptoms: [
-              { id: 1, name: 'Lower back pain' },
-              { id: 2, name: 'Radicular leg pain' },
-              { id: 3, name: 'Numbness' },
-            ],
-          },
-          {
-            id: 2,
-            name: 'Tension-Type Headache',
-            description: 'Primary headache characterized by bilateral pressing or tightening pain.',
-            bodyRegions: [
-              { id: 3, name: 'Head' },
-              { id: 4, name: 'Cervical Spine' },
-            ],
-            bodySystems: [
-              { id: 3, name: 'Nervous System' },
-              { id: 4, name: 'Musculoskeletal System' },
-            ],
-            vindicateCategories: [{ id: 3, name: 'Idiopathic' }],
-            osteopathicModels: [
-              { id: 3, name: 'Respiratory-Circulatory Model' },
-              { id: 1, name: 'Biomechanical Model' },
-            ],
-            symptoms: [
-              { id: 1, name: 'Lower back pain' },
-              { id: 2, name: 'Radicular leg pain' },
-              { id: 3, name: 'Numbness' },
-              { id: 4, name: 'Bilateral head pain' },
-              { id: 5, name: 'Neck stiffness' },
-              { id: 6, name: 'Pressure sensation' },
-            ],
-          },
-          {
-            id: 1,
-            name: 'Lumbar Disc Herniation',
-            description:
-              'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
-            bodyRegions: [
-              { id: 1, name: 'Lumbar Spine' },
-              { id: 2, name: 'Lower Extremity' },
-            ],
-            bodySystems: [{ id: 1, name: 'Musculoskeletal System' }],
-            vindicateCategories: [{ id: 1, name: 'Traumatic' }],
-            osteopathicModels: [{ id: 1, name: 'Biomechanical Model' }],
-            symptoms: [{ id: 1, name: 'Lower back pain' }],
-          },
-        ]);
+        this.diseases.set(response);
       },
       error: (_) => {
         this.toastNotificationService.showToastNotification({
@@ -150,7 +84,12 @@ export class OverviewComponent {
   }
 
   openSidePanelFilter(): void {
+    if (this.sidePanelOpen && this.activePanel() === 'filter') {
+      return;
+    }
+
     this.sidePanelService.setSidePanelContent(this.filterSidePanelContent());
+    this.activePanel.set('filter');
     this.sidePanelService.open();
   }
 
@@ -158,7 +97,13 @@ export class OverviewComponent {
     this.http.get<DiseaseExtended>(`${environment.apiBaseUrl}/disease/${disease.id}`).subscribe({
       next: (response) => {
         this.selectedDisease.set(response);
+
+        if (this.sidePanelOpen && this.activePanel() === 'disease') {
+          return;
+        }
+
         this.sidePanelService.setSidePanelContent(this.diseaseInformationSidePanelContent());
+        this.activePanel.set('disease');
         this.sidePanelService.open();
       },
       error: (_) => {

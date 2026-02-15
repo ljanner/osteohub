@@ -46,6 +46,23 @@
 
 <ng-template #diseaseInformation cdkPortal>
   <si-side-panel-content heading="Krankheitsinformationen" displayMode="overlay">
-    <div class="p-6">Different content</div>
+    <div class="p-6">
+      @let selectedDiseaseValue = selectedDisease();
+      @if (selectedDiseaseValue) {
+        <app-disease-details [disease]="selectedDiseaseValue" />
+      } @else {
+        <si-empty-state
+          heading="Krankheit nicht gefunden"
+          content="Die ausgewählte Krankheit konnte nicht gefunden werden. Bitte versuchen Sie es erneut."
+          [icon]="icons.elementInfo"
+        >
+          <p>
+            <button type="button" class="btn btn-primary" (click)="loadDiseases()">
+              Erneut laden
+            </button>
+          </p>
+        </si-empty-state>
+      }
+    </div>
   </si-side-panel-content>
 </ng-template>

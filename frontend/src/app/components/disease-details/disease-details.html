@@ -1,0 +1,51 @@
+@let diseaseValue = disease();
+@if (diseaseValue) {
+  <h2 class="mb-2">{{ diseaseValue.name }}</h2>
+  <p class="text-secondary mb-4">ICD: {{ diseaseValue.icd }}</p>
+  <p class="text-secondary mb-4">
+    @for (bodyRegion of diseaseValue.bodyRegions; track $index) {
+      {{ bodyRegion.name }}{{ $last ? '' : ',' }}
+    }
+    &bull;
+    @for (bodySystem of diseaseValue.bodySystems; track $index) {
+      {{ bodySystem.name }}{{ $last ? '' : ',' }}
+    }
+  </p>
+  <div class="d-flex flex-wrap gap-4 my-4">
+    @for (osteopathicModel of diseaseValue.osteopathicModels; track $index) {
+      <span class="badge bg-success-emphasis">{{ osteopathicModel.name }}</span>
+    }
+    @for (vindicateCategory of diseaseValue.vindicateCategories; track $index) {
+      <span class="badge bg-info-emphasis">{{ vindicateCategory.name }}</span>
+    }
+  </div>
+  <p>{{ diseaseValue.description }}</p>
+  <hr />
+  <p class="si-h5 mb-2">Ätiologie</p>
+  <p>{{ diseaseValue.etiology }}</p>
+  <p class="si-h5 mb-2">Pathogenese</p>
+  <p>{{ diseaseValue.pathogenesis }}</p>
+  <p class="si-h5 mb-2">Häufigkeit</p>
+  <p>{{ diseaseValue.frequency }}</p>
+  <hr />
+  <p class="si-h5 mb-2">Symptome</p>
+  <div class="d-flex flex-wrap gap-4 my-4 mb-6">
+    @for (symptom of diseaseValue.symptoms; track $index) {
+      <span class="badge bg-secondary">{{ symptom.name }}</span>
+    }
+  </div>
+  <p class="si-h5 mb-2">Red Flags</p>
+  <p>{{ diseaseValue.redFlags }}</p>
+  <p class="si-h5 mb-2">Diagnostik</p>
+  <p>{{ diseaseValue.diagnostics }}</p>
+  <p class="si-h5 mb-2">Prognose</p>
+  <p>{{ diseaseValue.prognosis }}</p>
+  <hr />
+  <p class="si-h5 mb-2">Therapie</p>
+  <p>{{ diseaseValue.therapy }}</p>
+  <hr />
+  <p class="si-h5 mb-2">Osteopathische Behandlung</p>
+  <p>{{ diseaseValue.osteopathicTreatment }}</p>
+} @else {
+  <p>Keine Krankheit ausgewählt.</p>
+}
