@@ -16,13 +16,23 @@
   </button>
 </div>
 <div class="mt-8 row g-5">
-  @for (disease of diseases; track $index) {
+  @for (disease of diseases(); track $index) {
     <app-disease-card
       class="col-12"
       [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'"
       [disease]="disease"
       (click)="openSidePanelDiseaseInformation(disease)"
     />
+  } @empty {
+    <si-empty-state
+      heading="Keine Krankheiten verfügbar"
+      content="Es sind keine Krankheiten verfügbar. Bitte versuchen Sie es später erneut."
+      [icon]="icons.elementInfo"
+    >
+      <p>
+        <button type="button" class="btn btn-primary" (click)="loadDiseases()">Erneut laden</button>
+      </p>
+    </si-empty-state>
   }
 </div>
 

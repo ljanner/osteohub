@@ -1,12 +1,14 @@
 /* eslint-disable @angular-eslint/no-experimental */
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { elementFilter } from '@siemens/element-icons';
+import { elementFilter, elementInfo } from '@siemens/element-icons';
+import { SiEmptyStateComponent } from '@siemens/element-ng/empty-state';
 import { addIcons, SiIconComponent } from '@siemens/element-ng/icon';
 import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import { SiSidePanelContentComponent, SiSidePanelService } from '@siemens/element-ng/side-panel';
+import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
 import { environment } from '../../../environments/environment';
 import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
@@ -21,6 +23,7 @@ import type { Disease, DiseaseExtended, FilterSelection } from '../../models/typ
     SiSearchBarComponent,
     SiIconComponent,
     SiSidePanelContentComponent,
+    SiEmptyStateComponent,
     ReactiveFormsModule,
     PortalModule,
   ],
@@ -29,6 +32,7 @@ import type { Disease, DiseaseExtended, FilterSelection } from '../../models/typ
 })
 export class OverviewComponent {
   private http = inject(HttpClient);
+  private toastNotificationService = inject(SiToastNotificationService);
   private sidePanelService = inject(SiSidePanelService);
   protected sidePanelOpen = this.sidePanelService.isOpen();
 
@@ -37,90 +41,103 @@ export class OverviewComponent {
     read: CdkPortal,
   });
 
-  protected readonly diseases: Disease[] = [
-    {
-      id: 1,
-      name: 'Lumbar Disc Herniation',
-      description:
-        'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
-      bodyRegions: [
-        { id: 1, name: 'Lumbar Spine' },
-        { id: 2, name: 'Lower Extremity' },
-      ],
-      bodySystems: [
-        { id: 1, name: 'Musculoskeletal System' },
-        { id: 2, name: 'Nervous System' },
-      ],
-      vindicateCategories: [
-        { id: 1, name: 'Traumatic' },
-        { id: 2, name: 'Degenerative' },
-      ],
-      osteopathicModels: [
-        { id: 1, name: 'Biomechanical Model' },
-        { id: 2, name: 'Neurological Model' },
-      ],
-      symptoms: [
-        { id: 1, name: 'Lower back pain' },
-        { id: 2, name: 'Radicular leg pain' },
-        { id: 3, name: 'Numbness' },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Tension-Type Headache',
-      description: 'Primary headache characterized by bilateral pressing or tightening pain.',
-      bodyRegions: [
-        { id: 3, name: 'Head' },
-        { id: 4, name: 'Cervical Spine' },
-      ],
-      bodySystems: [
-        { id: 3, name: 'Nervous System' },
-        { id: 4, name: 'Musculoskeletal System' },
-      ],
-      vindicateCategories: [{ id: 3, name: 'Idiopathic' }],
-      osteopathicModels: [
-        { id: 3, name: 'Respiratory-Circulatory Model' },
-        { id: 1, name: 'Biomechanical Model' },
-      ],
-      symptoms: [
-        { id: 1, name: 'Lower back pain' },
-        { id: 2, name: 'Radicular leg pain' },
-        { id: 3, name: 'Numbness' },
-        { id: 4, name: 'Bilateral head pain' },
-        { id: 5, name: 'Neck stiffness' },
-        { id: 6, name: 'Pressure sensation' },
-      ],
-    },
-    {
-      id: 1,
-      name: 'Lumbar Disc Herniation',
-      description:
-        'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
-      bodyRegions: [
-        { id: 1, name: 'Lumbar Spine' },
-        { id: 2, name: 'Lower Extremity' },
-      ],
-      bodySystems: [{ id: 1, name: 'Musculoskeletal System' }],
-      vindicateCategories: [{ id: 1, name: 'Traumatic' }],
-      osteopathicModels: [{ id: 1, name: 'Biomechanical Model' }],
-      symptoms: [{ id: 1, name: 'Lower back pain' }],
-    },
-  ];
-  protected selectedDisease: DiseaseExtended | null = null;
+  protected readonly diseases = signal<Disease[]>([]);
+  protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
 
   icons = addIcons({
     elementFilter,
+    elementInfo,
   });
 
   searchValue = new FormControl('');
 
   constructor() {
+    this.loadDiseases();
     this.searchValue.valueChanges.subscribe(() => console.log(this.searchValue.value));
     this.sidePanelService.isOpen$.subscribe((isOpen) => (this.sidePanelOpen = isOpen));
+  }
 
+  loadDiseases(): void {
     this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
       next: (response) => {
-        console.log('Diseases:', response);
+        // TODO: Add disease data in backend
+        this.diseases.set([
+          {
+            id: 1,
+            name: 'Lumbar Disc Herniation',
+            description:
+              'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
+            bodyRegions: [
+              { id: 1, name: 'Lumbar Spine' },
+              { id: 2, name: 'Lower Extremity' },
+            ],
+            bodySystems: [
+              { id: 1, name: 'Musculoskeletal System' },
+              { id: 2, name: 'Nervous System' },
+            ],
+            vindicateCategories: [
+              { id: 1, name: 'Traumatic' },
+              { id: 2, name: 'Degenerative' },
+            ],
+            osteopathicModels: [
+              { id: 1, name: 'Biomechanical Model' },
+              { id: 2, name: 'Neurological Model' },
+            ],
+            symptoms: [
+              { id: 1, name: 'Lower back pain' },
+              { id: 2, name: 'Radicular leg pain' },
+              { id: 3, name: 'Numbness' },
+            ],
+          },
+          {
+            id: 2,
+            name: 'Tension-Type Headache',
+            description: 'Primary headache characterized by bilateral pressing or tightening pain.',
+            bodyRegions: [
+              { id: 3, name: 'Head' },
+              { id: 4, name: 'Cervical Spine' },
+            ],
+            bodySystems: [
+              { id: 3, name: 'Nervous System' },
+              { id: 4, name: 'Musculoskeletal System' },
+            ],
+            vindicateCategories: [{ id: 3, name: 'Idiopathic' }],
+            osteopathicModels: [
+              { id: 3, name: 'Respiratory-Circulatory Model' },
+              { id: 1, name: 'Biomechanical Model' },
+            ],
+            symptoms: [
+              { id: 1, name: 'Lower back pain' },
+              { id: 2, name: 'Radicular leg pain' },
+              { id: 3, name: 'Numbness' },
+              { id: 4, name: 'Bilateral head pain' },
+              { id: 5, name: 'Neck stiffness' },
+              { id: 6, name: 'Pressure sensation' },
+            ],
+          },
+          {
+            id: 1,
+            name: 'Lumbar Disc Herniation',
+            description:
+              'Protrusion of the intervertebral disc in the lumbar spine causing nerve root irritation.',
+            bodyRegions: [
+              { id: 1, name: 'Lumbar Spine' },
+              { id: 2, name: 'Lower Extremity' },
+            ],
+            bodySystems: [{ id: 1, name: 'Musculoskeletal System' }],
+            vindicateCategories: [{ id: 1, name: 'Traumatic' }],
+            osteopathicModels: [{ id: 1, name: 'Biomechanical Model' }],
+            symptoms: [{ id: 1, name: 'Lower back pain' }],
+          },
+        ]);
+      },
+      error: (_) => {
+        this.toastNotificationService.showToastNotification({
+          state: 'danger',
+          title: 'Krankheiten konnten nicht geladen werden',
+          message: 'Bitte versuchen Sie es später erneut.',
+          timeout: 5000,
+        });
       },
     });
   }
@@ -135,15 +152,19 @@ export class OverviewComponent {
   }
 
   openSidePanelDiseaseInformation(disease: Disease): void {
-    console.log('Open disease information for disease ID:', disease.id);
     this.http.get<DiseaseExtended>(`${environment.apiBaseUrl}/disease/${disease.id}`).subscribe({
       next: (response) => {
-        this.selectedDisease = response;
+        this.selectedDisease.set(response);
         this.sidePanelService.setSidePanelContent(this.diseaseInformationSidePanelContent());
         this.sidePanelService.open();
       },
-      error: (error) => {
-        console.error('Error fetching disease information:', error);
+      error: (_) => {
+        this.toastNotificationService.showToastNotification({
+          state: 'danger',
+          title: 'Informationen konnten nicht geladen werden',
+          message: 'Bitte versuchen Sie es später erneut.',
+          timeout: 5000,
+        });
       },
     });
   }

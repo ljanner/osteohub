@@ -8,6 +8,7 @@ import {
   SiSelectMultiValueDirective,
   type SelectItem,
 } from '@siemens/element-ng/select';
+import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 import { catchError, forkJoin, of } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -34,6 +35,7 @@ import { FilterStateService } from '../../services/filter-state.service';
 })
 export class FilterPanelComponent implements OnInit {
   private http = inject(HttpClient);
+  private toastNotificationService = inject(SiToastNotificationService);
   private filterStateService = inject(FilterStateService);
   private destroyRef = inject(DestroyRef);
 
@@ -61,51 +63,126 @@ export class FilterPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let hasLoadingError = false;
+
     forkJoin({
-      bodyRegions: this.http
-        .get<BodyRegion[]>(`${environment.apiBaseUrl}/body-region`)
-        .pipe(catchError(() => of([] as BodyRegion[]))),
-      bodySystems: this.http
-        .get<BodySystem[]>(`${environment.apiBaseUrl}/body-system`)
-        .pipe(catchError(() => of([] as BodySystem[]))),
+      bodyRegions: this.http.get<BodyRegion[]>(`${environment.apiBaseUrl}/body-region`).pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as BodyRegion[]);
+        }),
+      ),
+      bodySystems: this.http.get<BodySystem[]>(`${environment.apiBaseUrl}/body-system`).pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as BodySystem[]);
+        }),
+      ),
       vindicateCategories: this.http
         .get<VindicateCategory[]>(`${environment.apiBaseUrl}/vindicate-category`)
-        .pipe(catchError(() => of([] as VindicateCategory[]))),
+        .pipe(
+          catchError(() => {
+            hasLoadingError = true;
+            return of([] as VindicateCategory[]);
+          }),
+        ),
       osteopathicModels: this.http
         .get<OsteopathicModel[]>(`${environment.apiBaseUrl}/osteopathic-model`)
-        .pipe(catchError(() => of([] as OsteopathicModel[]))),
-      symptoms: this.http
-        .get<Symptom[]>(`${environment.apiBaseUrl}/symptom`)
-        .pipe(catchError(() => of([] as Symptom[]))),
+        .pipe(
+          catchError(() => {
+            hasLoadingError = true;
+            return of([] as OsteopathicModel[]);
+          }),
+        ),
+      symptoms: this.http.get<Symptom[]>(`${environment.apiBaseUrl}/symptom`).pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as Symptom[]);
+        }),
+      ),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         ({ bodyRegions, bodySystems, vindicateCategories, osteopathicModels, symptoms }) => {
-          this.bodyRegionsOptions = bodyRegions.map((region) => ({
-            type: 'option',
-            label: region.name,
-            value: region.id,
-          }));
-          this.bodySystemsOptions = bodySystems.map((system) => ({
-            type: 'option',
-            label: system.name,
-            value: system.id,
-          }));
-          this.vindicateCategoriesOptions = vindicateCategories.map((category) => ({
-            type: 'option',
-            label: category.name,
-            value: category.id,
-          }));
-          this.osteopathicModelsOptions = osteopathicModels.map((model) => ({
-            type: 'option',
-            label: model.name,
-            value: model.id,
-          }));
-          this.symptomsOptions = symptoms.map((symptom) => ({
-            type: 'option',
-            label: symptom.name,
-            value: symptom.id,
-          }));
+          if (bodyRegions.length === 0) {
+            this.bodyRegionsOptions = [
+              {
+                type: 'option',
+                label: 'Keine Körperregionen verfügbar',
+                value: -1,
+                disabled: true,
+              },
+            ];
+          } else {
+            this.bodyRegionsOptions = bodyRegions.map((region) => ({
+              type: 'option',
+              label: region.name,
+              value: region.id,
+            }));
+          }
+          if (bodySystems.length === 0) {
+            this.bodySystemsOptions = [
+              { type: 'option', label: 'Keine Körpersysteme verfügbar', value: -1, disabled: true },
+            ];
+          } else {
+            this.bodySystemsOptions = bodySystems.map((system) => ({
+              type: 'option',
+              label: system.name,
+              value: system.id,
+            }));
+          }
+          if (vindicateCategories.length === 0) {
+            this.vindicateCategoriesOptions = [
+              {
+                type: 'option',
+                label: 'Keine VINDICATE-Kategorien verfügbar',
+                value: -1,
+                disabled: true,
+              },
+            ];
+          } else {
+            this.vindicateCategoriesOptions = vindicateCategories.map((category) => ({
+              type: 'option',
+              label: category.name,
+              value: category.id,
+            }));
+          }
+          if (osteopathicModels.length === 0) {
+            this.osteopathicModelsOptions = [
+              {
+                type: 'option',
+                label: 'Keine osteopathischen Modelle verfügbar',
+                value: -1,
+                disabled: true,
+              },
+            ];
+          } else {
+            this.osteopathicModelsOptions = osteopathicModels.map((model) => ({
+              type: 'option',
+              label: model.name,
+              value: model.id,
+            }));
+          }
+          if (symptoms.length === 0) {
+            this.symptomsOptions = [
+              { type: 'option', label: 'Keine Symptome verfügbar', value: -1, disabled: true },
+            ];
+          } else {
+            this.symptomsOptions = symptoms.map((symptom) => ({
+              type: 'option',
+              label: symptom.name,
+              value: symptom.id,
+            }));
+          }
+
+          if (hasLoadingError) {
+            this.toastNotificationService.showToastNotification({
+              state: 'danger',
+              title: 'Filter konnten nicht vollständig geladen werden',
+              message: 'Einige Filteroptionen sind derzeit nicht verfügbar.',
+              timeout: 5000,
+            });
+          }
         },
       );
   }
