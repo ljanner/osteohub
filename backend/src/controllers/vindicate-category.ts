@@ -12,10 +12,7 @@ const vindicateCategoryController = new Hono<{ Bindings: Bindings }>();
 vindicateCategoryController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
   const vindicateCategoriesList = await db.query.vindicateCategories.findMany();
-  return c.json({
-    ok: true,
-    data: vindicateCategoriesList
-  });
+  return c.json(vindicateCategoriesList);
 });
 
 export default vindicateCategoryController;
