@@ -26,7 +26,9 @@ describe('Overview', () => {
   });
 
   it('should create', async () => {
-    const request = httpTestingController.expectOne(`${environment.apiBaseUrl}/symptoms`);
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(`${environment.apiBaseUrl}/disease`);
     request.flush([]);
 
     await fixture.whenStable();
