@@ -47,7 +47,7 @@ export class OverviewComponent {
     read: CdkPortal,
   });
 
-  protected readonly diseases = signal<Disease[]>([]);
+  protected readonly diseases = signal<Disease[] | null>(null);
   protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
   private readonly activePanel = signal<'filter' | 'disease' | null>(null);
 
@@ -69,11 +69,13 @@ export class OverviewComponent {
   }
 
   loadDiseases(): void {
+    this.diseases.set(null);
     this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
       next: (response) => {
         this.diseases.set(response);
       },
       error: (_) => {
+        this.diseases.set([]);
         this.toastNotificationService.showToastNotification({
           state: 'danger',
           title: 'Krankheiten konnten nicht geladen werden',

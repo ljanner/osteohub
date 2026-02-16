@@ -11,6 +11,20 @@
   width: 100%;
 }
 
-si-card:hover {
-  cursor: pointer;
+.skeleton-heading {
+  block-size: 1.25rem;
+}
+
+.skeleton-subheading {
+  block-size: 1rem;
+}
+
+.skeleton-description {
+  block-size: 1.1428571429em;
+}
+
+.skeleton-badge {
+  border-radius: 50rem;
+  block-size: 1.5rem;
+  inline-size: 8rem;
 }
