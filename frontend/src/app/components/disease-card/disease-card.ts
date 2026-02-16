@@ -8,14 +8,21 @@ import type { Disease } from '../../models/types';
   imports: [SiCardComponent],
   templateUrl: './disease-card.html',
   styleUrl: './disease-card.scss',
+  host: {
+    '[class.loading]': 'disease() === null',
+  },
 })
 export class DiseaseCardComponent {
-  readonly disease = input.required<Disease>();
+  readonly disease = input<Disease | null>(null);
 
   protected readonly maxBadgeCount = 5;
 
   protected getVisibleBadges(): { key: string; name: string; className: string }[] {
     const disease = this.disease();
+
+    if (!disease) {
+      return [];
+    }
 
     const allBadges = [
       ...disease.osteopathicModels.map((model) => ({
@@ -40,6 +47,11 @@ export class DiseaseCardComponent {
 
   protected getHiddenBadgeCount(): number {
     const disease = this.disease();
+
+    if (!disease) {
+      return 0;
+    }
+
     const totalBadgeCount =
       disease.osteopathicModels.length +
       disease.vindicateCategories.length +

@@ -11,6 +11,8 @@
   width: 100%;
 }
 
-si-card:hover {
-  cursor: pointer;
+.skeleton-badge {
+  border-radius: 50rem;
+  block-size: 1.5rem;
+  inline-size: 5rem;
 }

@@ -1,28 +1,43 @@
 <si-card>
   <div class="p-6 pt-5" body>
     @let disease = this.disease();
-    <div class="d-flex flex-column gap-4">
-      <div class="d-flex flex-column gap-2">
-        <span class="si-h4">{{ disease.name }}</span>
-        <span class="text-secondary si-body text-truncate">
-          @for (region of disease.bodyRegions; track region.id) {
-            {{ region.name }}{{ $last ? '' : ',' }}
-          }
-          &bull;
-          @for (system of disease.bodySystems; track system.id) {
-            {{ system.name }}{{ $last ? '' : ',' }}
-          }
-        </span>
+    @if (!disease) {
+      <div class="d-flex flex-column gap-4" aria-hidden="true">
+        <div class="d-flex flex-column gap-2">
+          <span class="si-skeleton si-h4 w-75"></span>
+          <span class="si-skeleton si-body w-50"></span>
+        </div>
+        <span class="si-skeleton si-body w-100"></span>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="si-skeleton skeleton-badge"></span>
+          <span class="si-skeleton skeleton-badge"></span>
+          <span class="si-skeleton skeleton-badge"></span>
+        </div>
       </div>
-      <span class="text-truncate">{{ disease.description }}</span>
-      <div class="d-flex gap-2 flex-wrap">
-        @for (badge of getVisibleBadges(); track badge.key) {
-          <span class="badge" [class]="badge.className">{{ badge.name }}</span>
-        }
-        @if (getHiddenBadgeCount() > 0) {
-          <span class="badge bg-secondary">+{{ getHiddenBadgeCount() }}</span>
-        }
+    } @else {
+      <div class="d-flex flex-column gap-4">
+        <div class="d-flex flex-column gap-2">
+          <span class="si-h4">{{ disease.name }}</span>
+          <span class="text-secondary si-body text-truncate">
+            @for (region of disease.bodyRegions; track region.id) {
+              {{ region.name }}{{ $last ? '' : ',' }}
+            }
+            &bull;
+            @for (system of disease.bodySystems; track system.id) {
+              {{ system.name }}{{ $last ? '' : ',' }}
+            }
+          </span>
+        </div>
+        <span class="text-truncate">{{ disease.description }}</span>
+        <div class="d-flex gap-2 flex-wrap">
+          @for (badge of getVisibleBadges(); track badge.key) {
+            <span class="badge" [class]="badge.className">{{ badge.name }}</span>
+          }
+          @if (getHiddenBadgeCount() > 0) {
+            <span class="badge bg-secondary">+{{ getHiddenBadgeCount() }}</span>
+          }
+        </div>
       </div>
-    </div>
+    }
   </div>
 </si-card>

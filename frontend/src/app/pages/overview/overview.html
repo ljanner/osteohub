@@ -16,14 +16,12 @@
   </button>
 </div>
 <div class="mt-8 row g-5">
-  @for (disease of diseases(); track disease.id) {
-    <app-disease-card
-      class="col-12"
-      [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'"
-      [disease]="disease"
-      (click)="openSidePanelDiseaseInformation(disease)"
-    />
-  } @empty {
+  @let diseasesValue = diseases();
+  @if (diseasesValue === null) {
+    @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
+      <app-disease-card class="col-12" [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'" />
+    }
+  } @else if (diseasesValue.length === 0) {
     <si-empty-state
       heading="Keine Krankheiten verfügbar"
       content="Es sind keine Krankheiten verfügbar. Bitte versuchen Sie es später erneut."
@@ -33,6 +31,15 @@
         <button type="button" class="btn btn-primary" (click)="loadDiseases()">Erneut laden</button>
       </p>
     </si-empty-state>
+  } @else {
+    @for (disease of diseasesValue; track disease.id) {
+      <app-disease-card
+        class="col-12"
+        [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'"
+        [disease]="disease"
+        (click)="openSidePanelDiseaseInformation(disease)"
+      />
+    }
   }
 </div>
 

@@ -1,3 +1,7 @@
 ::ng-deep si-select-input {
   font-weight: unset;
 }
+
+app-disease-card:not(.loading) {
+  cursor: pointer;
+}
