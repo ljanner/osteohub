@@ -1,0 +1,10 @@
+@use '@siemens/element-theme/src/styles/variables';
+
+.detail-heading {
+  color: variables.$element-text-secondary;
+  margin-block-end: 4px;
+}
+
+p {
+  margin: 0;
+}
