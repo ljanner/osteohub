@@ -21,31 +21,51 @@
   </div>
   <p>{{ diseaseValue.description }}</p>
   <hr />
-  <p class="si-h5 mb-2">Ätiologie</p>
-  <p>{{ diseaseValue.etiology }}</p>
-  <p class="si-h5 mb-2">Pathogenese</p>
-  <p>{{ diseaseValue.pathogenesis }}</p>
-  <p class="si-h5 mb-2">Häufigkeit</p>
-  <p>{{ diseaseValue.frequency }}</p>
-  <hr />
-  <p class="si-h5 mb-2">Symptome</p>
-  <div class="d-flex flex-wrap gap-4 my-4 mb-6">
-    @for (symptom of diseaseValue.symptoms; track $index) {
-      <span class="badge bg-secondary">{{ symptom.name }}</span>
-    }
+  <div class="d-flex flex-column gap-5">
+    <div>
+      <p class="detail-heading">Ätiologie</p>
+      <p>{{ diseaseValue.etiology }}</p>
+    </div>
+    <div>
+      <p class="detail-heading">Pathogenese</p>
+      <p>{{ diseaseValue.pathogenesis }}</p>
+    </div>
+    <div>
+      <p class="detail-heading">Häufigkeit</p>
+      <p>{{ diseaseValue.frequency }}</p>
+    </div>
+    <hr />
+    <div>
+      <p class="detail-heading">Symptome</p>
+      <div class="d-flex flex-wrap gap-4 my-4 mb-6">
+        @for (symptom of diseaseValue.symptoms; track $index) {
+          <span class="badge bg-secondary">{{ symptom.name }}</span>
+        }
+      </div>
+    </div>
+    <div>
+      <p class="detail-heading">Red Flags</p>
+      <p>{{ diseaseValue.redFlags }}</p>
+    </div>
+    <div>
+      <p class="detail-heading">Diagnostik</p>
+      <p>{{ diseaseValue.diagnostics }}</p>
+    </div>
+    <div>
+      <p class="detail-heading">Prognose</p>
+      <p>{{ diseaseValue.prognosis }}</p>
+    </div>
+    <hr />
+    <div>
+      <p class="detail-heading">Therapie</p>
+      <p>{{ diseaseValue.therapy }}</p>
+    </div>
+    <hr />
+    <div>
+      <p class="detail-heading">Osteopathische Behandlung</p>
+      <p>{{ diseaseValue.osteopathicTreatment }}</p>
+    </div>
   </div>
-  <p class="si-h5 mb-2">Red Flags</p>
-  <p>{{ diseaseValue.redFlags }}</p>
-  <p class="si-h5 mb-2">Diagnostik</p>
-  <p>{{ diseaseValue.diagnostics }}</p>
-  <p class="si-h5 mb-2">Prognose</p>
-  <p>{{ diseaseValue.prognosis }}</p>
-  <hr />
-  <p class="si-h5 mb-2">Therapie</p>
-  <p>{{ diseaseValue.therapy }}</p>
-  <hr />
-  <p class="si-h5 mb-2">Osteopathische Behandlung</p>
-  <p>{{ diseaseValue.osteopathicTreatment }}</p>
 } @else {
   <p>Keine Krankheit ausgewählt.</p>
 }
