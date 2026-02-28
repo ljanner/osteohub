@@ -17,11 +17,22 @@
 </div>
 <div class="mt-8 row g-5">
   @let diseasesValue = filteredDiseases();
-  @if (diseasesValue === null) {
+  @let dataStateValue = dataState();
+  @if (dataStateValue === 'loading') {
     @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
       <app-disease-card class="col-12" [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'" />
     }
-  } @else if (diseasesValue.length === 0) {
+  } @else if (dataStateValue === 'error') {
+    <si-empty-state
+      heading="Krankheiten konnten nicht geladen werden"
+      content="Beim Laden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+      [icon]="icons.elementInfo"
+    >
+      <p>
+        <button type="button" class="btn btn-primary" (click)="loadDiseases()">Erneut laden</button>
+      </p>
+    </si-empty-state>
+  } @else if (dataStateValue === 'empty') {
     <si-empty-state
       heading="Keine Krankheiten verfügbar"
       content="Es sind keine Krankheiten verfügbar. Bitte versuchen Sie es später erneut."
@@ -31,6 +42,12 @@
         <button type="button" class="btn btn-primary" (click)="loadDiseases()">Erneut laden</button>
       </p>
     </si-empty-state>
+  } @else if (diseasesValue?.length === 0) {
+    <si-empty-state
+      heading="Keine Treffer"
+      content="Mit den aktuellen Such- und Filterkriterien wurden keine passenden Krankheiten gefunden."
+      [icon]="icons.elementInfo"
+    />
   } @else {
     @for (disease of diseasesValue; track disease.id) {
       <app-disease-card
