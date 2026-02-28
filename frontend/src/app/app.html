@@ -1,3 +1,8 @@
+@let isLoggedInValue = authService.isLoggedIn();
+@let userNameValue = authService.userName();
+@let userEmailValue = authService.userEmail();
+@let userPictureValue = authService.userPicture();
+
 <si-side-panel
   #sidePanel
   class="d-flex si-layout-fixed-height h-100"
@@ -18,6 +23,17 @@
           [icon]="icons.elementSettings"
           [siHeaderDropdownTriggerFor]="settings"
         ></button>
+        @if (isLoggedInValue) {
+          <button
+            si-header-account-item
+            type="button"
+            referrerPolicy="no-referrer"
+            [aria-label]="userNameValue"
+            [name]="userNameValue"
+            [imageUrl]="userPictureValue"
+            [siHeaderDropdownTriggerFor]="account"
+          ></button>
+        }
       </si-header-actions>
     </si-application-header>
 
@@ -42,9 +58,26 @@
     >
       {{ darkThemeValue ? 'Light Mode' : 'Dark Mode' }}
     </button>
+    @if (!isLoggedInValue) {
+      <div class="dropdown-divider"></div>
+      <button si-header-dropdown-item type="button" [icon]="icons.elementLogin" (click)="login()">
+        Admin Login
+      </button>
+    }
+  </si-header-dropdown>
+</ng-template>
+
+<ng-template #account>
+  <si-header-dropdown>
+    <si-account-details
+      company="OsteoHub"
+      userRole="Admin"
+      [name]="userNameValue"
+      [email]="userEmailValue"
+    />
     <div class="dropdown-divider"></div>
-    <button si-header-dropdown-item type="button" routerLink="/login" [icon]="icons.elementLogin">
-      Admin Login
+    <button si-header-dropdown-item type="button" [icon]="icons.elementLogout" (click)="logout()">
+      Logout
     </button>
   </si-header-dropdown>
 </ng-template>
