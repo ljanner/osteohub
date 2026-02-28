@@ -11,6 +11,11 @@
   width: 100%;
 }
 
+.badge {
+  margin-inline: 0;
+  max-inline-size: none;
+}
+
 .skeleton-heading {
   block-size: 1.25rem;
 }
