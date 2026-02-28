@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import {
   elementInfo,
   elementSun,
@@ -9,7 +9,9 @@ import {
   elementLogout,
 } from '@siemens/element-icons';
 import {
+  SiAccountDetailsComponent,
   SiApplicationHeaderComponent,
+  SiHeaderAccountItemComponent,
   SiHeaderActionItemComponent,
   SiHeaderActionsDirective,
   SiHeaderBrandDirective,
@@ -23,10 +25,14 @@ import { addIcons } from '@siemens/element-ng/icon';
 import { SiSidePanelComponent } from '@siemens/element-ng/side-panel';
 import { SiThemeService } from '@siemens/element-ng/theme';
 
+import { AuthService } from './services/auth.service';
+
 @Component({
   selector: 'app-root',
   imports: [
     SiApplicationHeaderComponent,
+    SiAccountDetailsComponent,
+    SiHeaderAccountItemComponent,
     SiHeaderDropdownComponent,
     SiHeaderDropdownItemComponent,
     SiHeaderDropdownTriggerDirective,
@@ -42,6 +48,8 @@ import { SiThemeService } from '@siemens/element-ng/theme';
 })
 export class AppComponent {
   private themeService = inject(SiThemeService);
+  private router = inject(Router);
+  protected readonly authService = inject(AuthService);
 
   protected readonly darkTheme = signal(false);
 
@@ -62,5 +70,15 @@ export class AppComponent {
   toggleTheme(): void {
     this.darkTheme.set(!this.darkTheme());
     this.themeService.applyThemeType(this.darkTheme() ? 'dark' : 'light');
+  }
+
+  login(): void {
+    this.authService.loginWithGoogle();
+  }
+
+  async logout(): Promise<void> {
+    if (await this.authService.logout()) {
+      this.router.navigate(['/overview']);
+    }
   }
 }
