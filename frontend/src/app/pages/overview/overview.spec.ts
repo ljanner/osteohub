@@ -1,9 +1,19 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component, output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../environments/environment';
+import { FilterSelectionComponent } from './components/filter-selection/filter-selection';
 import { OverviewComponent } from './overview';
+
+@Component({
+  selector: 'app-filter-selection',
+  template: '',
+})
+class FilterSelectionStubComponent {
+  readonly filtersChanged = output<void>();
+}
 
 describe('Overview', () => {
   let component: OverviewComponent;
@@ -14,7 +24,12 @@ describe('Overview', () => {
     await TestBed.configureTestingModule({
       imports: [OverviewComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
-    }).compileComponents();
+    })
+      .overrideComponent(OverviewComponent, {
+        remove: { imports: [FilterSelectionComponent] },
+        add: { imports: [FilterSelectionStubComponent] },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;

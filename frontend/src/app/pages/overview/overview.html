@@ -1,4 +1,4 @@
-<div class="d-flex gap-4">
+<div class="d-flex flex-column gap-6">
   <si-search-bar
     class="flex-grow-1"
     placeholder="Suchen..."
@@ -6,14 +6,7 @@
     [debounceTime]="400"
     [showIcon]="true"
   />
-  <button
-    type="button"
-    class="btn btn-icon btn-tertiary"
-    aria-label="filter"
-    (click)="openSidePanelFilter()"
-  >
-    <si-icon [icon]="icons.elementFilter" />
-  </button>
+  <app-filter-selection (filtersChanged)="filterOverview()" />
 </div>
 <div class="mt-8 row g-5">
   @let diseasesValue = filteredDiseases();
@@ -59,14 +52,6 @@
     }
   }
 </div>
-
-<ng-template #filter cdkPortal>
-  <si-side-panel-content heading="Filter" displayMode="overlay">
-    <div class="p-6 w-100">
-      <app-filter-panel (filtersChanged)="filterOverview()" />
-    </div>
-  </si-side-panel-content>
-</ng-template>
 
 <ng-template #diseaseInformation cdkPortal>
   <si-side-panel-content heading="Krankheitsinformationen" displayMode="overlay">

@@ -1,7 +1,10 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit, output } from '@angular/core';
+import { Component, DestroyRef, inject, linkedSignal, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SiCollapsiblePanelComponent } from '@siemens/element-ng/accordion';
+import { SiResizeObserverDirective } from '@siemens/element-ng/resize-observer';
 import {
   SiSelectComponent,
   SiSelectSimpleOptionsDirective,
@@ -22,46 +25,58 @@ import type {
 } from '../../../../models/types';
 import { FilterStateService } from '../../../../services/filter-state.service';
 
+const MOBILE_BREAKPOINT = 576;
+
 @Component({
-  selector: 'app-filter-panel',
+  selector: 'app-filter-selection',
   imports: [
+    NgTemplateOutlet,
+    SiCollapsiblePanelComponent,
+    SiResizeObserverDirective,
     SiSelectComponent,
     SiSelectSimpleOptionsDirective,
     SiSelectMultiValueDirective,
+    FormsModule,
     ReactiveFormsModule,
   ],
-  templateUrl: './filter-panel.html',
-  styleUrl: './filter-panel.scss',
+  templateUrl: './filter-selection.html',
+  styleUrl: './filter-selection.scss',
 })
-export class FilterPanelComponent implements OnInit {
+export class FilterSelectionComponent implements OnInit {
   private http = inject(HttpClient);
   private toastNotificationService = inject(SiToastNotificationService);
   private filterStateService = inject(FilterStateService);
   private destroyRef = inject(DestroyRef);
 
   readonly filtersChanged = output<void>();
+  protected readonly isMobile = signal<boolean>(false);
 
   protected bodyRegionsOptions: SelectItem<number>[] = [];
-  protected bodyRegionsSelected: number[] = [];
   protected bodySystemsOptions: SelectItem<number>[] = [];
-  protected bodySystemsSelected: number[] = [];
   protected vindicateCategoriesOptions: SelectItem<number>[] = [];
-  protected vindicateCategoriesSelected: number[] = [];
   protected osteopathicModelsOptions: SelectItem<number>[] = [];
-  protected osteopathicModelsSelected: number[] = [];
   protected symptomsOptions: SelectItem<number>[] = [];
+
+  protected bodyRegionsSelected: number[] = [];
+  protected bodySystemsSelected: number[] = [];
+  protected vindicateCategoriesSelected: number[] = [];
+  protected osteopathicModelsSelected: number[] = [];
   protected symptomsSelected: number[] = [];
 
-  constructor() {
-    const storedActiveFilters = this.filterStateService.activeFilters();
+  protected readonly hasActiveFilters = linkedSignal(() =>
+    this.filterStateService.hasActiveFilters(),
+  );
 
-    this.bodyRegionsSelected = [...storedActiveFilters.bodyRegions];
-    this.bodySystemsSelected = [...storedActiveFilters.bodySystems];
-    this.vindicateCategoriesSelected = [...storedActiveFilters.vindicateCategories];
-    this.osteopathicModelsSelected = [...storedActiveFilters.osteopathicModels];
-    this.symptomsSelected = [...storedActiveFilters.symptoms];
+  constructor() {
+    this.getActiveFilters();
   }
 
+  /**
+   * Loads the filter options from the API and initializes the select options.
+   * If loading any of the filter categories fails, an error toast notification
+   * is shown and the respective filter category is initialized with a disabled
+   * option indicating that the filter options are not available.
+   */
   ngOnInit(): void {
     let hasLoadingError = false;
 
@@ -187,6 +202,12 @@ export class FilterPanelComponent implements OnInit {
       );
   }
 
+  protected onLayoutResize(event: Event | { width: number }): void {
+    if (typeof event === 'object' && event !== null && 'width' in event) {
+      this.isMobile.set(event.width <= MOBILE_BREAKPOINT);
+    }
+  }
+
   filterOverview(): void {
     const activeFilters: FilterCategories = {
       bodyRegions: this.bodyRegionsSelected,
@@ -198,5 +219,22 @@ export class FilterPanelComponent implements OnInit {
 
     this.filterStateService.setActiveFilters(activeFilters);
     this.filtersChanged.emit();
+  }
+
+  protected clearAllFilters(): void {
+    this.filterStateService.clearActiveFilters();
+    this.getActiveFilters();
+
+    this.filtersChanged.emit();
+  }
+
+  private getActiveFilters(): void {
+    const storedActiveFilters = this.filterStateService.activeFilters();
+
+    this.bodyRegionsSelected = [...storedActiveFilters.bodyRegions];
+    this.bodySystemsSelected = [...storedActiveFilters.bodySystems];
+    this.vindicateCategoriesSelected = [...storedActiveFilters.vindicateCategories];
+    this.osteopathicModelsSelected = [...storedActiveFilters.osteopathicModels];
+    this.symptomsSelected = [...storedActiveFilters.symptoms];
   }
 }

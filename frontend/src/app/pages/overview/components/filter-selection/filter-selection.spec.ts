@@ -3,20 +3,20 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../../../environments/environment';
-import { FilterPanelComponent } from './filter-panel';
+import { FilterSelectionComponent } from './filter-selection';
 
-describe('FilterPanelComponent', () => {
-  let component: FilterPanelComponent;
-  let fixture: ComponentFixture<FilterPanelComponent>;
+describe('FilterSelectionComponent', () => {
+  let component: FilterSelectionComponent;
+  let fixture: ComponentFixture<FilterSelectionComponent>;
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FilterPanelComponent],
+      imports: [FilterSelectionComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FilterPanelComponent);
+    fixture = TestBed.createComponent(FilterSelectionComponent);
     component = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
   });

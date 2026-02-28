@@ -6,7 +6,6 @@ import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // eslint-disable-next-line @angular-eslint/no-experimental
     provideIconConfig({ disableSvgIcons: false }),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),

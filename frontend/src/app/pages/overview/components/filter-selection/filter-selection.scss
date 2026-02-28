@@ -1,0 +1,22 @@
+@use '@siemens/element-theme/src/styles/variables' as variables;
+
+.filter-section {
+  flex-grow: 1;
+  min-width: 180px;
+  max-width: 250px;
+
+  h5 span {
+    color: variables.$element-text-secondary;
+  }
+
+  si-select ::ng-deep * {
+    color: variables.$element-text-primary !important; // stylelint-disable-line declaration-no-important
+    font-weight: variables.$si-font-weight-normal;
+  }
+}
+
+.mobile .filter-section {
+  width: 100%;
+  max-width: none;
+  margin-block-end: 12px;
+}

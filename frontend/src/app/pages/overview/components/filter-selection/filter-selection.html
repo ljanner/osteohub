@@ -1,0 +1,88 @@
+<div siResizeObserver (siResizeObserver)="onLayoutResize($event)">
+  @if (isMobile()) {
+    <si-collapsible-panel heading="Filter" contentCssClasses="pt-4">
+      <ng-container [ngTemplateOutlet]="filtersContent" />
+    </si-collapsible-panel>
+  } @else {
+    <ng-container [ngTemplateOutlet]="filtersContent" />
+  }
+</div>
+
+<ng-template #filtersContent>
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex flex-row flex-wrap gap-4" [class.mobile]="isMobile()">
+        <div class="filter-section">
+          <h5><span id="body-region">Körperregion</span></h5>
+          <si-select
+            class="w-100"
+            multi
+            labelledby="body-region"
+            placeholder="Optionen auswählen"
+            [options]="bodyRegionsOptions"
+            [(value)]="bodyRegionsSelected"
+            (valueChange)="filterOverview()"
+          />
+        </div>
+        <div class="filter-section">
+          <h5><span id="body-system">Körpersysteme</span></h5>
+          <si-select
+            class="w-100"
+            multi
+            labelledby="body-system"
+            placeholder="Optionen auswählen"
+            [options]="bodySystemsOptions"
+            [(value)]="bodySystemsSelected"
+            (valueChange)="filterOverview()"
+          />
+        </div>
+        <div class="filter-section">
+          <h5><span id="vindicate-category">VINDICATE Kategorie</span></h5>
+          <si-select
+            class="w-100"
+            multi
+            labelledby="vindicate-category"
+            placeholder="Optionen auswählen"
+            [options]="vindicateCategoriesOptions"
+            [(value)]="vindicateCategoriesSelected"
+            (valueChange)="filterOverview()"
+          />
+        </div>
+        <div class="filter-section">
+          <h5><span id="osteopathic-model">Osteopathisches Modell</span></h5>
+          <si-select
+            class="w-100"
+            multi
+            labelledby="osteopathic-model"
+            placeholder="Optionen auswählen"
+            [options]="osteopathicModelsOptions"
+            [(value)]="osteopathicModelsSelected"
+            (valueChange)="filterOverview()"
+          />
+        </div>
+        <div class="filter-section">
+          <h5><span id="symptom">Symptome</span></h5>
+          <si-select
+            class="w-100"
+            multi
+            labelledby="symptom"
+            placeholder="Optionen auswählen"
+            [options]="symptomsOptions"
+            [(value)]="symptomsSelected"
+            (valueChange)="filterOverview()"
+          />
+        </div>
+        <div class="d-flex flex-grow-1 justify-content-end">
+          <button
+            type="button"
+            class="btn btn-tertiary"
+            [disabled]="!hasActiveFilters()"
+            (click)="clearAllFilters()"
+          >
+            Filter zurücksetzen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

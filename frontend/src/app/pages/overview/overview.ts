@@ -1,12 +1,11 @@
-/* eslint-disable @angular-eslint/no-experimental */
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { elementFilter, elementInfo } from '@siemens/element-icons';
+import { elementInfo } from '@siemens/element-icons';
 import { SiEmptyStateComponent } from '@siemens/element-ng/empty-state';
-import { addIcons, SiIconComponent } from '@siemens/element-ng/icon';
+import { addIcons } from '@siemens/element-ng/icon';
 import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import { SiSidePanelContentComponent, SiSidePanelService } from '@siemens/element-ng/side-panel';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
@@ -16,15 +15,14 @@ import { DiseaseCardComponent } from '../../components/disease-card/disease-card
 import { DiseaseDetailsComponent } from '../../components/disease-details/disease-details';
 import type { Disease, DiseaseExtended, FilterCategories } from '../../models/types';
 import { FilterStateService } from '../../services/filter-state.service';
-import { FilterPanelComponent } from './components/filter-panel/filter-panel';
+import { FilterSelectionComponent } from './components/filter-selection/filter-selection';
 
 @Component({
   selector: 'app-overview',
   imports: [
     DiseaseCardComponent,
-    FilterPanelComponent,
+    FilterSelectionComponent,
     SiSearchBarComponent,
-    SiIconComponent,
     SiSidePanelContentComponent,
     SiEmptyStateComponent,
     ReactiveFormsModule,
@@ -42,7 +40,6 @@ export class OverviewComponent {
   private destroyRef = inject(DestroyRef);
   protected sidePanelOpen = this.sidePanelService.isOpen();
 
-  readonly filterSidePanelContent = viewChild.required('filter', { read: CdkPortal });
   readonly diseaseInformationSidePanelContent = viewChild.required('diseaseInformation', {
     read: CdkPortal,
   });
@@ -51,10 +48,9 @@ export class OverviewComponent {
   protected readonly filteredDiseases = signal<Disease[] | null>(null);
   protected readonly dataState = signal<'loading' | 'ready' | 'empty' | 'error'>('loading');
   protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
-  private readonly activePanel = signal<'filter' | 'disease' | null>(null);
+  private readonly activePanel = signal<'disease' | null>(null);
 
   icons = addIcons({
-    elementFilter,
     elementInfo,
   });
 
@@ -152,16 +148,6 @@ export class OverviewComponent {
     }
 
     return items.some((item) => selectedIds.includes(item.id));
-  }
-
-  openSidePanelFilter(): void {
-    if (this.sidePanelOpen && this.activePanel() === 'filter') {
-      return;
-    }
-
-    this.sidePanelService.setSidePanelContent(this.filterSidePanelContent());
-    this.activePanel.set('filter');
-    this.sidePanelService.open();
   }
 
   openSidePanelDiseaseInformation(disease: Disease): void {
