@@ -49,6 +49,7 @@ export class OverviewComponent {
 
   private readonly allDiseases = signal<Disease[] | null>(null);
   protected readonly filteredDiseases = signal<Disease[] | null>(null);
+  protected readonly dataState = signal<'loading' | 'ready' | 'empty' | 'error'>('loading');
   protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
   private readonly activePanel = signal<'filter' | 'disease' | null>(null);
 
@@ -70,16 +71,25 @@ export class OverviewComponent {
   }
 
   loadDiseases(): void {
+    this.dataState.set('loading');
     this.filteredDiseases.set(null);
     this.allDiseases.set(null);
     this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
       next: (response) => {
         this.allDiseases.set(response);
+        if (response.length === 0) {
+          this.filteredDiseases.set([]);
+          this.dataState.set('empty');
+          return;
+        }
+
+        this.dataState.set('ready');
         this.filterOverview();
       },
       error: (_) => {
-        this.filteredDiseases.set([]);
-        this.allDiseases.set([]);
+        this.filteredDiseases.set(null);
+        this.allDiseases.set(null);
+        this.dataState.set('error');
         this.toastNotificationService.showToastNotification({
           state: 'danger',
           title: 'Krankheiten konnten nicht geladen werden',
