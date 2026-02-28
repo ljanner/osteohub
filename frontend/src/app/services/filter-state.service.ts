@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
-import type { FilterSelection } from '../models/types';
+import type { FilterCategories } from '../models/types';
 
-const defaultFilterSelection: FilterSelection = {
+const defaultActiveFilters: FilterCategories = {
   bodyRegions: [],
   bodySystems: [],
   vindicateCategories: [],
@@ -12,21 +12,21 @@ const defaultFilterSelection: FilterSelection = {
 
 @Injectable({ providedIn: 'root' })
 export class FilterStateService {
-  readonly selection = signal<FilterSelection>(defaultFilterSelection);
+  readonly activeFilters = signal<FilterCategories>(defaultActiveFilters);
 
-  setSelection(selection: FilterSelection): void {
-    const nextSelection: FilterSelection = {
-      bodyRegions: [...selection.bodyRegions],
-      bodySystems: [...selection.bodySystems],
-      vindicateCategories: [...selection.vindicateCategories],
-      osteopathicModels: [...selection.osteopathicModels],
-      symptoms: [...selection.symptoms],
+  setActiveFilters(activeFilters: FilterCategories): void {
+    const nextActiveFilters: FilterCategories = {
+      bodyRegions: [...activeFilters.bodyRegions],
+      bodySystems: [...activeFilters.bodySystems],
+      vindicateCategories: [...activeFilters.vindicateCategories],
+      osteopathicModels: [...activeFilters.osteopathicModels],
+      symptoms: [...activeFilters.symptoms],
     };
 
-    this.selection.set(nextSelection);
+    this.activeFilters.set(nextActiveFilters);
   }
 
-  clearSelection(): void {
-    this.setSelection(defaultFilterSelection);
+  clearActiveFilters(): void {
+    this.setActiveFilters(defaultActiveFilters);
   }
 }

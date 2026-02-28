@@ -15,7 +15,7 @@ import { environment } from '../../../../../environments/environment';
 import type {
   BodyRegion,
   BodySystem,
-  FilterSelection,
+  FilterCategories,
   VindicateCategory,
   OsteopathicModel,
   Symptom,
@@ -53,13 +53,13 @@ export class FilterPanelComponent implements OnInit {
   protected symptomsSelected: number[] = [];
 
   constructor() {
-    const storedSelection = this.filterStateService.selection();
+    const storedActiveFilters = this.filterStateService.activeFilters();
 
-    this.bodyRegionsSelected = [...storedSelection.bodyRegions];
-    this.bodySystemsSelected = [...storedSelection.bodySystems];
-    this.vindicateCategoriesSelected = [...storedSelection.vindicateCategories];
-    this.osteopathicModelsSelected = [...storedSelection.osteopathicModels];
-    this.symptomsSelected = [...storedSelection.symptoms];
+    this.bodyRegionsSelected = [...storedActiveFilters.bodyRegions];
+    this.bodySystemsSelected = [...storedActiveFilters.bodySystems];
+    this.vindicateCategoriesSelected = [...storedActiveFilters.vindicateCategories];
+    this.osteopathicModelsSelected = [...storedActiveFilters.osteopathicModels];
+    this.symptomsSelected = [...storedActiveFilters.symptoms];
   }
 
   ngOnInit(): void {
@@ -188,7 +188,7 @@ export class FilterPanelComponent implements OnInit {
   }
 
   filterOverview(): void {
-    const selection: FilterSelection = {
+    const activeFilters: FilterCategories = {
       bodyRegions: this.bodyRegionsSelected,
       bodySystems: this.bodySystemsSelected,
       vindicateCategories: this.vindicateCategoriesSelected,
@@ -196,7 +196,7 @@ export class FilterPanelComponent implements OnInit {
       symptoms: this.symptomsSelected,
     };
 
-    this.filterStateService.setSelection(selection);
+    this.filterStateService.setActiveFilters(activeFilters);
     this.filtersChanged.emit();
   }
 }

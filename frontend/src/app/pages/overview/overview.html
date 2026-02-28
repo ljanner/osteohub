@@ -16,7 +16,7 @@
   </button>
 </div>
 <div class="mt-8 row g-5">
-  @let diseasesValue = diseases();
+  @let diseasesValue = filteredDiseases();
   @if (diseasesValue === null) {
     @for (skeleton of [1, 2, 3, 4, 5, 6]; track skeleton) {
       <app-disease-card class="col-12" [class]="sidePanelOpen ? 'col-xl-6' : 'col-md-6 col-lg-4'" />

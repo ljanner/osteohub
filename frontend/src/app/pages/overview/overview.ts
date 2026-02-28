@@ -14,7 +14,7 @@ import { SiToastNotificationService } from '@siemens/element-ng/toast-notificati
 import { environment } from '../../../environments/environment';
 import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
 import { DiseaseDetailsComponent } from '../../components/disease-details/disease-details';
-import type { Disease, DiseaseExtended } from '../../models/types';
+import type { Disease, DiseaseExtended, FilterCategories } from '../../models/types';
 import { FilterStateService } from '../../services/filter-state.service';
 import { FilterPanelComponent } from './components/filter-panel/filter-panel';
 
@@ -47,7 +47,8 @@ export class OverviewComponent {
     read: CdkPortal,
   });
 
-  protected readonly diseases = signal<Disease[] | null>(null);
+  private readonly allDiseases = signal<Disease[] | null>(null);
+  protected readonly filteredDiseases = signal<Disease[] | null>(null);
   protected readonly selectedDisease = signal<DiseaseExtended | null>(null);
   private readonly activePanel = signal<'filter' | 'disease' | null>(null);
 
@@ -62,20 +63,23 @@ export class OverviewComponent {
     this.loadDiseases();
     this.searchValue.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.filterOverview(this.searchValue.value));
+      .subscribe(() => this.filterOverview());
     this.sidePanelService.isOpen$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((isOpen) => (this.sidePanelOpen = isOpen));
   }
 
   loadDiseases(): void {
-    this.diseases.set(null);
+    this.filteredDiseases.set(null);
+    this.allDiseases.set(null);
     this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
       next: (response) => {
-        this.diseases.set(response);
+        this.allDiseases.set(response);
+        this.filterOverview();
       },
       error: (_) => {
-        this.diseases.set([]);
+        this.filteredDiseases.set([]);
+        this.allDiseases.set([]);
         this.toastNotificationService.showToastNotification({
           state: 'danger',
           title: 'Krankheiten konnten nicht geladen werden',
@@ -86,9 +90,58 @@ export class OverviewComponent {
     });
   }
 
-  filterOverview(searchTerm?: string): void {
-    const filterSelection = this.filterStateService.selection();
-    console.log('Filter overview with', filterSelection, 'and search term', searchTerm);
+  filterOverview(): void {
+    const allDiseases = this.allDiseases();
+    if (allDiseases === null) {
+      return;
+    }
+
+    const normalizedSearch = this.normalizeSearchTerm();
+    const activeFilters = this.filterStateService.activeFilters();
+
+    this.filteredDiseases.set(this.filterDiseases(allDiseases, normalizedSearch, activeFilters));
+  }
+
+  private normalizeSearchTerm(): string {
+    return this.searchValue.value.trim().toLocaleLowerCase();
+  }
+
+  private filterDiseases(
+    diseases: Disease[],
+    normalizedSearch: string,
+    activeFilters: FilterCategories,
+  ): Disease[] {
+    return diseases.filter(
+      (disease) =>
+        this.matchesSearchTerm(disease, normalizedSearch) &&
+        this.matchesCategoryFilters(disease, activeFilters),
+    );
+  }
+
+  private matchesSearchTerm(disease: Disease, normalizedSearch: string): boolean {
+    return (
+      normalizedSearch.length === 0 ||
+      disease.name.toLocaleLowerCase().includes(normalizedSearch) ||
+      disease.description.toLocaleLowerCase().includes(normalizedSearch)
+    );
+  }
+
+  private matchesCategoryFilters(disease: Disease, activeFilters: FilterCategories): boolean {
+    return (
+      this.matchesSelection(disease.bodyRegions, activeFilters.bodyRegions) &&
+      this.matchesSelection(disease.bodySystems, activeFilters.bodySystems) &&
+      this.matchesSelection(disease.vindicateCategories, activeFilters.vindicateCategories) &&
+      this.matchesSelection(disease.osteopathicModels, activeFilters.osteopathicModels) &&
+      this.matchesSelection(disease.symptoms, activeFilters.symptoms)
+    );
+  }
+
+  private matchesSelection(items: { id: number }[], selectedIds: number[]): boolean {
+    if (selectedIds.length === 0) {
+      return true;
+    }
+
+    return items.some((item) => selectedIds.includes(item.id));
   }
 
   openSidePanelFilter(): void {
