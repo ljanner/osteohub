@@ -38,8 +38,8 @@
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
     "@siemens/element-icons": "1.0.2",
-    "@siemens/element-ng": "49.0.0-rc.3",
-    "@siemens/element-theme": "49.0.0-rc.3",
+    "@siemens/element-ng": "49.0.0",
+    "@siemens/element-theme": "49.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

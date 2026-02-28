@@ -73,11 +73,11 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       '@siemens/element-ng':
-        specifier: 49.0.0-rc.3
-        version: 49.0.0-rc.3(bf22a93cb8c45b5e324a050827223738)
+        specifier: 49.0.0
+        version: 49.0.0(450c453ff2615fdddebc814f608ac1b2)
       '@siemens/element-theme':
-        specifier: 49.0.0-rc.3
-        version: 49.0.0-rc.3
+        specifier: 49.0.0
+        version: 49.0.0
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -2126,8 +2126,8 @@ packages:
   '@siemens/element-icons@1.0.2':
     resolution: {integrity: sha512-7LfFBhcBnzt9+Ymqlna8UxHf4BDoj/0I9XuRsTYM4vy71zY+MMdrcEO2ZGM2LryN8gtIuivUYaIdDxxNNTgNeA==}
 
-  '@siemens/element-ng@49.0.0-rc.3':
-    resolution: {integrity: sha512-0vEWx2HmtXCnt1jD1zVqGt/S5M7hM1+wNLNLWL/doIp23K87Zoq+Nv9hC6aL9j8DCqb+o81gkY5YXdEgakbN6A==}
+  '@siemens/element-ng@49.0.0':
+    resolution: {integrity: sha512-1xwPmTsrDcnA1H6Rfn7RLJnUiuYJl9lyo7VJ1zgjRxDiPt/8tXOhkZUZevS9nPildRJxdMuo3tzy4zTCL9Offw==}
     peerDependencies:
       '@angular/cdk': '21'
       '@angular/common': '21'
@@ -2136,9 +2136,10 @@ packages:
       '@angular/router': '21'
       '@ngx-formly/bootstrap': ^6.2.2
       '@ngx-formly/core': ^6.2.2
-      '@siemens/element-theme': 49.0.0-rc.3
-      '@siemens/element-translate-ng': 49.0.0-rc.3
-      '@siemens/ngx-datatable': 22 - 25
+      '@siemens/element-icons': '1'
+      '@siemens/element-theme': 49.0.0
+      '@siemens/element-translate-ng': 49.0.0
+      '@siemens/ngx-datatable': '25'
       ag-grid-community: ^34.3.1
       flag-icons: ^7.3.2
       google-libphonenumber: ^3.2.40
@@ -2159,8 +2160,8 @@ packages:
       ngx-image-cropper:
         optional: true
 
-  '@siemens/element-theme@49.0.0-rc.3':
-    resolution: {integrity: sha512-mk7aVie20UqnK+ljyK+5Xa6OAuYvdrhxZF53m8AHf7EBjld2a/jXD20SzkShDZDU16S5QbFRz2KrJf1bF1U2mw==}
+  '@siemens/element-theme@49.0.0':
+    resolution: {integrity: sha512-XXtV+lysw1NTVQC4qeOgMGHeTlg+kMYlrzzxEUh83zbv/pmTUBbr44QccTX96rdhse4BPYOS+nRZnehceoOAIw==}
 
   '@siemens/element-translate-ng@49.0.0-rc.3':
     resolution: {integrity: sha512-e5xBzfr3+U1YbcFi+YG6g4ufe4ZQd0phFNS/qL6bqBm1bI52a348wSR15aUjU5pt2QUkYt6SM/vdoJx2UMOp8g==}
@@ -2623,6 +2624,7 @@ packages:
   basic-ftp@5.1.0:
     resolution: {integrity: sha512-RkaJzeJKDbaDWTIPiJwubyljaEPwpVWkm9Rt5h9Nd6h7tEXTJ3VB4qxdZBioV7JO5yLUaOKwz7vDOzlncUsegw==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.0, please upgrade
 
   beasties@0.3.5:
     resolution: {integrity: sha512-NaWu+f4YrJxEttJSm16AzMIFtVldCvaJ68b1L098KpqXmxt9xOLtKoLkKxb8ekhOrLqEJAbvT6n6SEvB/sac7A==}
@@ -7304,18 +7306,19 @@ snapshots:
 
   '@siemens/element-icons@1.0.2': {}
 
-  '@siemens/element-ng@49.0.0-rc.3(bf22a93cb8c45b5e324a050827223738)':
+  '@siemens/element-ng@49.0.0(450c453ff2615fdddebc814f608ac1b2)':
     dependencies:
       '@angular/cdk': 21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(@angular/platform-browser@21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@angular/common': 21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/core': 21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2)
       '@angular/forms': 21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(@angular/platform-browser@21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@angular/router': 21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(@angular/platform-browser@21.1.4(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2)))(rxjs@7.8.2)
-      '@siemens/element-theme': 49.0.0-rc.3
+      '@siemens/element-icons': 1.0.2
+      '@siemens/element-theme': 49.0.0
       '@siemens/element-translate-ng': 49.0.0-rc.3(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))
       tslib: 2.8.1
 
-  '@siemens/element-theme@49.0.0-rc.3': {}
+  '@siemens/element-theme@49.0.0': {}
 
   '@siemens/element-translate-ng@49.0.0-rc.3(@angular/common@21.1.4(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.1.4(@angular/compiler@21.1.4)(rxjs@7.8.2))':
     dependencies:
