@@ -23,7 +23,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile --prefer-offline
       - run: pnpm lint:all
-      - run: pnpm frontend:test:headless
+      - run: pnpm frontend:test:headless --coverage
       - run: pnpm build:all
       - uses: actions/upload-artifact@v6
         with:
