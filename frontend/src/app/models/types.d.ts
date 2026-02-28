@@ -46,7 +46,7 @@ export type DiseaseExtended = Disease & {
   osteopathicTreatment: string;
 };
 
-export type FilterSelection = {
+export type FilterCategories = {
   bodyRegions: number[];
   bodySystems: number[];
   vindicateCategories: number[];
