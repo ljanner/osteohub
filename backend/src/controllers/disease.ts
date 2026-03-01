@@ -1,7 +1,17 @@
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 
-import { relations } from '../db/schema';
+import {
+  diseaseBodyRegions,
+  diseaseBodySystems,
+  diseaseOsteopathicModels,
+  diseaseSymptoms,
+  diseaseVindicateCategories,
+  diseases,
+  relations
+} from '../db/schema';
+import authMiddleware from '../middleware/auth';
 
 type Bindings = {
   DB: D1Database;
@@ -65,6 +75,31 @@ diseaseController.get('/:id', async c => {
   }
 
   return c.json(disease);
+});
+
+diseaseController.delete('/:id', authMiddleware(), async c => {
+  const db = drizzle(c.env.DB, { relations });
+  const id = Number.parseInt(c.req.param('id'), 10);
+
+  if (Number.isNaN(id)) {
+    return c.json({ error: 'Invalid disease id' }, 400);
+  }
+
+  await db.batch([
+    db.delete(diseaseBodyRegions).where(eq(diseaseBodyRegions.diseaseId, id)),
+    db.delete(diseaseBodySystems).where(eq(diseaseBodySystems.diseaseId, id)),
+    db.delete(diseaseVindicateCategories).where(eq(diseaseVindicateCategories.diseaseId, id)),
+    db.delete(diseaseOsteopathicModels).where(eq(diseaseOsteopathicModels.diseaseId, id)),
+    db.delete(diseaseSymptoms).where(eq(diseaseSymptoms.diseaseId, id))
+  ]);
+
+  const [deletedDisease] = await db.delete(diseases).where(eq(diseases.id, id)).returning();
+
+  if (!deletedDisease) {
+    return c.json({ error: 'Disease not found' }, 404);
+  }
+
+  return c.json(deletedDisease);
 });
 
 export default diseaseController;
