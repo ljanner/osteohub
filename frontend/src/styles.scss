@@ -3,3 +3,7 @@
 
 // Use Element components
 @use '@siemens/element-ng/element-ng';
+
+:root {
+  --element-button-focus-width: 2px;
+}
