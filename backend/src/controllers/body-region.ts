@@ -4,7 +4,7 @@ import { Hono } from 'hono';
 
 import { bodyRegions, diseaseBodyRegions, relations } from '../db/schema';
 import authMiddleware from '../middleware/auth';
-import { parseIdParam, parseNameBody } from '../utils/request';
+import { parseIdParam, parseNameBody } from './util/request';
 
 type Bindings = {
   DB: D1Database;
