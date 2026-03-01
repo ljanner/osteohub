@@ -15,6 +15,14 @@
       <si-header-brand>
         <a routerLink="/"><h1 class="application-name">OsteoHub</h1></a>
       </si-header-brand>
+      @if (isLoggedInValue) {
+        <si-header-navigation aria-label="Main navigation">
+          <a si-header-navigation-item routerLink="overview" routerLinkActive="active">Übersicht</a>
+          <a si-header-navigation-item routerLink="manage-categories" routerLinkActive="active"
+            >Kategorien verwalten</a
+          >
+        </si-header-navigation>
+      }
       <si-header-actions>
         <button
           type="button"

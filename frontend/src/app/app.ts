@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import {
   elementInfo,
   elementSun,
@@ -15,6 +15,8 @@ import {
   SiHeaderActionItemComponent,
   SiHeaderActionsDirective,
   SiHeaderBrandDirective,
+  SiHeaderNavigationComponent,
+  SiHeaderNavigationItemComponent,
 } from '@siemens/element-ng/application-header';
 import {
   SiHeaderDropdownComponent,
@@ -39,8 +41,11 @@ import { AuthService } from './services/auth.service';
     SiHeaderBrandDirective,
     SiHeaderActionsDirective,
     SiHeaderActionItemComponent,
+    SiHeaderNavigationComponent,
+    SiHeaderNavigationItemComponent,
     SiSidePanelComponent,
     RouterLink,
+    RouterLinkActive,
     RouterOutlet,
   ],
   templateUrl: './app.html',

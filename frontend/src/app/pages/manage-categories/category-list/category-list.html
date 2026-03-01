@@ -1,0 +1,48 @@
+<h3 class="mb-4">{{ label() }}</h3>
+
+<ul class="list-group">
+  @for (item of items(); track item.id) {
+    <li class="list-group-item">
+      @if (editingId() === item.id) {
+        <div class="d-flex align-items-center gap-2">
+          <input
+            class="form-control form-control-sm flex-grow-1"
+            type="text"
+            [ngModel]="editingName()"
+            (ngModelChange)="editingName.set($event)"
+            (keydown.enter)="saveEdit()"
+            (keydown.escape)="cancelEdit()"
+          />
+          <button type="button" class="btn btn-primary" (click)="saveEdit()">Speichern</button>
+          <button type="button" class="btn btn-tertiary" (click)="cancelEdit()">Abbrechen</button>
+        </div>
+      } @else {
+        <div class="d-flex align-items-center justify-content-between">
+          <span class="item-name">{{ item.name }}</span>
+          <div>
+            <si-content-action-bar
+              viewType="mobile"
+              [primaryActions]="itemActionMap().get(item.id)!"
+            />
+          </div>
+        </div>
+      }
+    </li>
+  } @empty {
+    <li class="text-secondary py-2">Keine Einträge vorhanden.</li>
+  }
+</ul>
+
+<div class="d-flex align-items-center gap-2 pt-4 border-top">
+  <input
+    class="form-control form-control-sm flex-grow-1"
+    type="text"
+    placeholder="Neuer Eintrag"
+    [ngModel]="newName()"
+    (ngModelChange)="newName.set($event)"
+    (keydown.enter)="addItem()"
+  />
+  <button type="button" class="btn btn-primary" [disabled]="!newName().trim()" (click)="addItem()">
+    Hinzufügen
+  </button>
+</div>
