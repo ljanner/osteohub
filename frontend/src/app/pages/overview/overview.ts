@@ -64,6 +64,7 @@ export class OverviewComponent {
     this.sidePanelService.isOpen$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((isOpen) => (this.sidePanelOpen = isOpen));
+    this.destroyRef.onDestroy(() => this.sidePanelService.close());
   }
 
   loadDiseases(): void {
