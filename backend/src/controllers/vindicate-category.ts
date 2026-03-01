@@ -14,7 +14,9 @@ const vindicateCategoryController = new Hono<{ Bindings: Bindings }>();
 
 vindicateCategoryController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
-  const vindicateCategoriesList = await db.query.vindicateCategories.findMany();
+  const vindicateCategoriesList = await db.query.vindicateCategories.findMany({
+    orderBy: { name: 'asc' }
+  });
 
   return c.json(vindicateCategoriesList);
 });

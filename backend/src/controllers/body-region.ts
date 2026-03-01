@@ -14,7 +14,7 @@ const bodyRegionController = new Hono<{ Bindings: Bindings }>();
 
 bodyRegionController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
-  const bodyRegionsList = await db.query.bodyRegions.findMany();
+  const bodyRegionsList = await db.query.bodyRegions.findMany({ orderBy: { name: 'asc' } });
 
   return c.json(bodyRegionsList);
 });

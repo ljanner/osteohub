@@ -14,7 +14,7 @@ const bodySystemController = new Hono<{ Bindings: Bindings }>();
 
 bodySystemController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
-  const bodySystemsList = await db.query.bodySystems.findMany();
+  const bodySystemsList = await db.query.bodySystems.findMany({ orderBy: { name: 'asc' } });
 
   return c.json(bodySystemsList);
 });

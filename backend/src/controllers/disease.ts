@@ -22,6 +22,7 @@ const diseaseController = new Hono<{ Bindings: Bindings }>();
 diseaseController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
   const diseasesList = await db.query.diseases.findMany({
+    orderBy: { name: 'asc' },
     columns: {
       id: true,
       name: true,
