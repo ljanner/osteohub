@@ -103,7 +103,11 @@ export class CategoryListComponent implements OnInit {
       .patch<Category>(`${environment.apiBaseUrl}${this.apiPath()}/${id}`, { name })
       .subscribe({
         next: (updated) => {
-          this.items.update((list) => list.map((i) => (i.id === id ? updated : i)));
+          this.items.update((list) =>
+            list
+              .map((i) => (i.id === id ? updated : i))
+              .sort((a, b) => a.name.localeCompare(b.name)),
+          );
           this.editingId.set(null);
           this.toastService.showToastNotification({
             state: 'success',
@@ -165,7 +169,9 @@ export class CategoryListComponent implements OnInit {
 
     this.http.post<Category>(`${environment.apiBaseUrl}${this.apiPath()}`, { name }).subscribe({
       next: (created) => {
-        this.items.update((list) => [...list, created]);
+        this.items.update((list) =>
+          [...list, created].sort((a, b) => a.name.localeCompare(b.name)),
+        );
         this.newName.set('');
 
         this.toastService.showToastNotification({
