@@ -6,12 +6,13 @@ import {
   diseaseBodyRegions,
   diseaseBodySystems,
   diseaseOsteopathicModels,
+  diseases,
   diseaseSymptoms,
   diseaseVindicateCategories,
-  diseases,
   relations
 } from '../db/schema';
 import authMiddleware from '../middleware/auth';
+import { isCreateDiseaseBody } from './util/disease.helpers';
 
 type Bindings = {
   DB: D1Database;
@@ -76,6 +77,57 @@ diseaseController.get('/:id', async c => {
   }
 
   return c.json(disease);
+});
+
+diseaseController.post('/', authMiddleware(), async c => {
+  const body = await c.req.json<unknown>().catch(() => null);
+
+  if (!isCreateDiseaseBody(body)) {
+    return c.json({ error: 'Invalid request body' }, 400);
+  }
+
+  const db = drizzle(c.env.DB, { relations });
+
+  let addedDisease: typeof diseases.$inferSelect | undefined;
+  try {
+    [addedDisease] = await db
+      .insert(diseases)
+      .values({
+        name: body.name.trim(),
+        icd: body.icd.trim(),
+        description: body.description.trim(),
+        frequency: body.frequency.trim(),
+        etiology: body.etiology.trim(),
+        pathogenesis: body.pathogenesis.trim(),
+        redFlags: body.redFlags.trim(),
+        diagnostics: body.diagnostics.trim(),
+        therapy: body.therapy.trim(),
+        prognosis: body.prognosis.trim(),
+        osteopathicTreatment: body.osteopathicTreatment.trim()
+      })
+      .returning();
+  } catch {
+    return c.json({ error: 'Failed to create disease' }, 500);
+  }
+
+  try {
+    const diseaseId = addedDisease.id;
+    // prettier-ignore
+    const { bodyRegionIds, bodySystemIds, vindicateCategoryIds, osteopathicModelIds, symptomIds } = body;
+    // prettier-ignore
+    await db.batch([
+      db.insert(diseaseBodyRegions).values(bodyRegionIds.map(bodyRegionId => ({ diseaseId, bodyRegionId }))),
+      db.insert(diseaseBodySystems).values(bodySystemIds.map(bodySystemId => ({ diseaseId, bodySystemId }))),
+      db.insert(diseaseVindicateCategories).values(vindicateCategoryIds.map(vindicateCategoryId => ({ diseaseId, vindicateCategoryId }))),
+      db.insert(diseaseOsteopathicModels).values(osteopathicModelIds.map(osteopathicModelId => ({ diseaseId, osteopathicModelId }))),
+      db.insert(diseaseSymptoms).values(symptomIds.map(symptomId => ({ diseaseId, symptomId })))
+    ]);
+  } catch {
+    await db.delete(diseases).where(eq(diseases.id, addedDisease.id));
+    return c.json({ error: 'One or more provided IDs do not exist' }, 422);
+  }
+
+  return c.json(addedDisease, 201);
 });
 
 diseaseController.delete('/:id', authMiddleware(), async c => {
