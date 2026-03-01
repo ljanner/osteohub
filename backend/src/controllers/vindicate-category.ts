@@ -55,13 +55,13 @@ vindicateCategoryController.delete('/:id', authMiddleware(), async c => {
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
   const db = drizzle(c.env.DB, { relations });
-  await db
-    .delete(diseaseVindicateCategories)
-    .where(eq(diseaseVindicateCategories.vindicateCategoryId, id));
-  const [deleted] = await db
-    .delete(vindicateCategories)
-    .where(eq(vindicateCategories.id, id))
-    .returning();
+  const [, deletedCategories] = await db.batch([
+    db
+      .delete(diseaseVindicateCategories)
+      .where(eq(diseaseVindicateCategories.vindicateCategoryId, id)),
+    db.delete(vindicateCategories).where(eq(vindicateCategories.id, id)).returning()
+  ]);
+  const deleted = deletedCategories?.[0];
 
   if (!deleted) return c.json({ error: 'Not found' }, 404);
 

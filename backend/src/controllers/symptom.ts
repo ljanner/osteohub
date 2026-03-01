@@ -48,8 +48,11 @@ symptomController.delete('/:id', authMiddleware(), async c => {
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
   const db = drizzle(c.env.DB, { relations });
-  await db.delete(diseaseSymptoms).where(eq(diseaseSymptoms.symptomId, id));
-  const [deleted] = await db.delete(symptoms).where(eq(symptoms.id, id)).returning();
+  const [, deletedCategories] = await db.batch([
+    db.delete(diseaseSymptoms).where(eq(diseaseSymptoms.symptomId, id)),
+    db.delete(symptoms).where(eq(symptoms.id, id)).returning()
+  ]);
+  const deleted = deletedCategories?.[0];
 
   if (!deleted) return c.json({ error: 'Not found' }, 404);
 

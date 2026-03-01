@@ -86,15 +86,15 @@ diseaseController.delete('/:id', authMiddleware(), async c => {
     return c.json({ error: 'Invalid disease id' }, 400);
   }
 
-  await db.batch([
+  const [, , , , , deletedDiseases] = await db.batch([
     db.delete(diseaseBodyRegions).where(eq(diseaseBodyRegions.diseaseId, id)),
     db.delete(diseaseBodySystems).where(eq(diseaseBodySystems.diseaseId, id)),
     db.delete(diseaseVindicateCategories).where(eq(diseaseVindicateCategories.diseaseId, id)),
     db.delete(diseaseOsteopathicModels).where(eq(diseaseOsteopathicModels.diseaseId, id)),
-    db.delete(diseaseSymptoms).where(eq(diseaseSymptoms.diseaseId, id))
+    db.delete(diseaseSymptoms).where(eq(diseaseSymptoms.diseaseId, id)),
+    db.delete(diseases).where(eq(diseases.id, id)).returning()
   ]);
-
-  const [deletedDisease] = await db.delete(diseases).where(eq(diseases.id, id)).returning();
+  const deletedDisease = deletedDiseases?.[0];
 
   if (!deletedDisease) {
     return c.json({ error: 'Disease not found' }, 404);
