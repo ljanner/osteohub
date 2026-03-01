@@ -14,7 +14,7 @@ const symptomController = new Hono<{ Bindings: Bindings }>();
 
 symptomController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
-  const symptomsList = await db.query.symptoms.findMany();
+  const symptomsList = await db.query.symptoms.findMany({ orderBy: { name: 'asc' } });
   return c.json(symptomsList);
 });
 

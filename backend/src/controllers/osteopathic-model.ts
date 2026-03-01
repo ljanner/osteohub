@@ -14,7 +14,9 @@ const osteopathicModelController = new Hono<{ Bindings: Bindings }>();
 
 osteopathicModelController.get('/', async c => {
   const db = drizzle(c.env.DB, { relations });
-  const osteopathicModelsList = await db.query.osteopathicModels.findMany();
+  const osteopathicModelsList = await db.query.osteopathicModels.findMany({
+    orderBy: { name: 'asc' }
+  });
 
   return c.json(osteopathicModelsList);
 });
