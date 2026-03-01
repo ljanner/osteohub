@@ -53,8 +53,11 @@ bodySystemController.delete('/:id', authMiddleware(), async c => {
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
   const db = drizzle(c.env.DB, { relations });
-  await db.delete(diseaseBodySystems).where(eq(diseaseBodySystems.bodySystemId, id));
-  const [deleted] = await db.delete(bodySystems).where(eq(bodySystems.id, id)).returning();
+  const [, deletedCategories] = await db.batch([
+    db.delete(diseaseBodySystems).where(eq(diseaseBodySystems.bodySystemId, id)),
+    db.delete(bodySystems).where(eq(bodySystems.id, id)).returning()
+  ]);
+  const deleted = deletedCategories?.[0];
 
   if (!deleted) return c.json({ error: 'Not found' }, 404);
 
