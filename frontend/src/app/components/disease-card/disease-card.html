@@ -18,17 +18,26 @@
       </div>
     } @else {
       <div class="d-flex flex-column gap-4">
-        <div class="d-flex flex-column gap-2">
-          <span class="si-h4">{{ disease.name }}</span>
-          <span class="text-secondary si-body text-truncate">
-            @for (region of disease.bodyRegions; track region.id) {
-              {{ region.name }}{{ $last ? '' : ',' }}
-            }
-            &bull;
-            @for (system of disease.bodySystems; track system.id) {
-              {{ system.name }}{{ $last ? '' : ',' }}
-            }
-          </span>
+        <div class="d-flex">
+          <div class="d-flex flex-column gap-2 flex-grow-1">
+            <span class="si-h4">{{ disease.name }}</span>
+            <span class="text-secondary si-body text-truncate">
+              @for (region of disease.bodyRegions; track region.id) {
+                {{ region.name }}{{ $last ? '' : ',' }}
+              }
+              &bull;
+              @for (system of disease.bodySystems; track system.id) {
+                {{ system.name }}{{ $last ? '' : ',' }}
+              }
+            </span>
+          </div>
+          @if (authService.isLoggedIn()) {
+            <si-content-action-bar
+              viewType="collapsible"
+              [primaryActions]="primaryItems"
+              (click)="$event.stopPropagation()"
+            />
+          }
         </div>
         <span class="text-truncate">{{ disease.description }}</span>
         <div class="d-flex gap-2 flex-wrap">
