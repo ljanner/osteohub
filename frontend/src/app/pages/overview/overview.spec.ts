@@ -47,6 +47,7 @@ const mockSidePanelService = {
   isOpen: () => false,
   isOpen$,
   open: vi.fn(),
+  close: vi.fn(),
   setSidePanelContent: vi.fn(),
 };
 
@@ -59,6 +60,7 @@ describe('OverviewComponent', () => {
   beforeEach(async () => {
     mockToastService.showToastNotification.mockClear();
     mockSidePanelService.open.mockClear();
+    mockSidePanelService.close.mockClear();
     mockSidePanelService.setSidePanelContent.mockClear();
 
     await TestBed.configureTestingModule({
