@@ -11,3 +11,11 @@
 | 10.02.2026 | Cloudflare Workers Exploration. Hono und Drizzle Prototype implementiert. Deployment-Flow erfolgreich getestet.                                                 | 5 Stunden |
 | 11.02.2026 | Clean Wipe und Neuaufsetzung der Architektur. Gute Ansätze übernommen, Komplexität reduziert. Figma UI Prototyping.                                             | 5 Stunden |
 | 12.02.2026 | Frontend und GitHub workflows aufgesetzt                                                                                                                        | 2 Stunden |
+| 14.02.2026 | Frontend und Backend verbunden. Datenbankschema mit Drizzle aufgesetzt und erste Filterdaten aus dem Backend ins Frontend integriert.                           | 5 Stunden |
+| 15.02.2026 | GET-Endpunkte im Backend implementiert. Filter-/Detailanzeige im Frontend erweitert, Error-Handling ergänzt, Seed-Daten ergänzt und Tests/Linting nachgezogen.  | 8 Stunden |
+| 16.02.2026 | Loading-Skeletons in der Overview eingeführt, um Ladezustände im Frontend klarer darzustellen.                                                                  | 2 Stunden |
+| 17.02.2026 | Disease-Details UI überarbeitet (Spacing/Design) und bestehende Darstellung verfeinert.                                                                         | 2 Stunden |
+| 28.02.2026 | Angular/Dependencies aktualisiert (Element v49), Filterlogik und State-Handling verbessert, Tests/Coverage ausgebaut und Authentifizierung integriert.          | 8 Stunden |
+| 01.03.2026 | Kategorienverwaltung und Disease-CRUD erweitert (Backend + Frontend), Sortierung/Fixes ergänzt und Unit-Tests für Manage-Categories hinzugefügt.                | 8 Stunden |
+| 02.03.2026 | Disease-Editor für Erstellung ergänzt und Darstellung in Disease-Cards (Truncation/Max-Width) korrigiert.                                                       | 3 Stunden |
+| 03.03.2026 | Disease PATCH-Endpunkt im Backend implementiert und im Disease-Editor integriert,Installations-/Nutzungsdokumentation hinzugefügt. Code Qualität verbesserungen | 5 Stunden |
