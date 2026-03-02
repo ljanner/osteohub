@@ -1,59 +1,98 @@
-# Osteohub
+# Frontend (OsteoHub)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+Das Frontend ist eine Angular-Anwendung (Angular 21) und nutzt die Siemens Element Design Library:
+
+- `@siemens/element-ng` für UI-Komponenten
+- `@siemens/element-theme` für globale Styles/Tokens
+- `@siemens/element-icons` für Icons
+
+Dokumentation: [element.siemens.io](https://element.siemens.io/)
 
 ## Development server
 
-To start a local development server, run:
+Im `frontend`-Ordner:
 
 ```bash
-ng serve
+pnpm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Anschliessend läuft die App unter `http://localhost:4200/`.
 
-## Code scaffolding
+## Backend-Abhängigkeit
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Das Frontend verwendet im Development standardmässig das lokale Backend unter
+`http://localhost:8787`. Für Login und API-Funktionen muss das Backend parallel laufen.
+
+Root-Command dafür:
 
 ```bash
-ng generate component component-name
+pnpm backend:start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Weitere Details findest du in `backend/README.md`.
 
-```bash
-ng generate --help
-```
+## Environment-Konfiguration
+
+- Development: `src/environments/environment.development.ts`
+- Production: `src/environments/environment.ts`
+
+Der relevante Wert ist `apiBaseUrl`.
 
 ## Building
 
-To build the project run:
+Development Build:
 
 ```bash
-ng build
+pnpm build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Production Build:
 
 ```bash
-ng test
+pnpm build:prod
 ```
 
-## Running end-to-end tests
+## Testing
 
-For end-to-end (e2e) testing, run:
+Tests (Chrome):
 
 ```bash
-ng e2e
+pnpm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Tests Headless (CI-freundlich):
 
-## Additional Resources
+```bash
+pnpm test:headless
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Hinweis:
+
+- `pnpm test` eignet sich für lokale Entwicklung mit Browser.
+- `pnpm test:headless` eignet sich für CI und schnelle lokale Checks ohne sichtbaren Browser.
+
+## Linting
+
+Angular/TypeScript linten:
+
+```bash
+pnpm lint
+```
+
+SCSS linten:
+
+```bash
+pnpm lint:sass
+```
+
+Alle Lints ausführen:
+
+```bash
+pnpm lint:all
+```
+
+## Troubleshooting
+
+- Port `4200` belegt: freien Port verwenden (`pnpm start -- --port 4201`).
+- API nicht erreichbar/CORS-Fehler: prüfen, ob das Backend läuft (`pnpm backend:start` im Root).
+- Tests starten nicht: lokale Chrome-Installation prüfen oder `pnpm test:headless` nutzen.

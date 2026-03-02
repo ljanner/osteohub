@@ -288,7 +288,7 @@ describe('OverviewComponent', () => {
           ...mockDisease(1, 'Migräne'),
           bodySystems: [
             { id: 1, name: 'Nervensystem' },
-            { id: 2, name: 'Gefäßsystem' },
+            { id: 2, name: 'Gefässsystem' },
           ],
         },
       ];

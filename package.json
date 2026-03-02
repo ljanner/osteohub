@@ -13,6 +13,8 @@
     "frontend:test:headless": "pnpm --filter ./frontend test:headless --watch=false",
     "frontend:lint:all": "pnpm --filter ./frontend lint:all",
     "backend:start": "pnpm --filter ./backend start",
+    "backend:db:apply:local": "pnpm --filter ./backend db:apply:local",
+    "backend:db:seed:local": "pnpm --filter ./backend db:seed:local",
     "backend:lint": "pnpm --filter ./backend lint",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
