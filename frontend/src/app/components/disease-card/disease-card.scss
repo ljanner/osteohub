@@ -33,3 +33,7 @@
   block-size: 1.5rem;
   inline-size: 8rem;
 }
+
+.disease-card-name {
+  max-inline-size: calc(100% - 40px);
+}
