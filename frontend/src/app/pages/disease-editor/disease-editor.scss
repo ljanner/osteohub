@@ -1,0 +1,15 @@
+@use '@siemens/element-theme/src/styles/variables';
+
+.section-heading {
+  color: variables.$element-text-secondary;
+  border-block-end: 1px solid variables.$element-ui-4;
+  padding-block-end: 12px;
+  margin-block-end: 0;
+}
+
+.invalid-select-feedback {
+  display: block;
+  margin-block-start: 4px;
+  font-size: 0.875em;
+  color: variables.$element-text-danger;
+}

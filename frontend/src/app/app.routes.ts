@@ -13,6 +13,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then((m) => m.LoginComponent),
   },
   {
+    path: 'disease-editor',
+    loadComponent: () =>
+      import('./pages/disease-editor/disease-editor').then((m) => m.DiseaseEditorComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'manage-categories',
     loadComponent: () =>
       import('./pages/manage-categories/manage-categories').then(
