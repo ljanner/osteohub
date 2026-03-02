@@ -123,7 +123,11 @@ diseaseController.post('/', authMiddleware(), async c => {
       db.insert(diseaseSymptoms).values(symptomIds.map(symptomId => ({ diseaseId, symptomId })))
     ]);
   } catch {
-    await db.delete(diseases).where(eq(diseases.id, addedDisease.id));
+    try {
+      await db.delete(diseases).where(eq(diseases.id, addedDisease.id));
+    } catch {
+      return c.json({ error: 'Failed to rollback disease creation' }, 500);
+    }
     return c.json({ error: 'One or more provided IDs do not exist' }, 422);
   }
 
