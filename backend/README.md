@@ -1,21 +1,67 @@
-```txt
-npm install
-npm run dev
+# Backend (OsteoHub)
+
+Dieses Backend basiert auf:
+
+- **Hono** als Web-Framework
+- **Drizzle ORM** für DB-Zugriffe
+- **Wrangler** als Cloudflare-Worker Runtime/CLI
+- **Cloudflare D1** als Datenbank
+
+## Setup
+
+Im Projekt-Root:
+
+```bash
+pnpm install
+cp .env.example .env
 ```
 
-```txt
-npm run deploy
+Minimal nötig in `backend/.env`:
+
+```dotenv
+CONFIGURATION=development
+JWT_SECRET=replace-with-a-secure-random-string
 ```
 
-[For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
+Für den vollständigen Auth-Flow werden zusätzlich Secrets benötigt (Google/Cloudflare).
 
-```txt
-npm run cf-typegen
+## Lokal starten
+
+Im `backend`-Ordner:
+
+```bash
+pnpm start
 ```
 
-Pass the `CloudflareBindings` as generics when instantiation `Hono`:
+Das startet Wrangler lokal (`wrangler dev`) mit lokaler D1.
 
-```ts
-// src/index.ts
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+## Mit Remote-DB starten
+
+Im `backend`-Ordner:
+
+```bash
+pnpm start --remote
+```
+
+## Datenbank (lokal)
+
+Im `backend`-Ordner:
+
+```bash
+pnpm db:apply:local
+pnpm db:seed:local
+```
+
+## Deploy
+
+Im `backend`-Ordner:
+
+```bash
+pnpm deploy
+```
+
+## Typen aktualisieren
+
+```bash
+pnpm cf-typegen
 ```
