@@ -1,0 +1,267 @@
+<div class="editor-page">
+  <div class="d-flex align-items-center gap-4 mb-6">
+    <h1 class="mb-0">Neue Krankheit anlegen</h1>
+  </div>
+
+  <form novalidate [formGroup]="form" (ngSubmit)="submit()">
+    <div class="d-flex flex-column gap-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="section-heading mb-5">Grundinformationen</h5>
+          <div class="row g-5">
+            <div class="col-12">
+              <si-form-item
+                label="Name der Krankheit"
+                [formErrorMapper]="{ required: 'Name ist erforderlich.' }"
+              >
+                <input type="text" class="form-control" formControlName="name" />
+              </si-form-item>
+            </div>
+            <div class="col-12">
+              <si-form-item
+                label="ICD-Code"
+                [formErrorMapper]="{ required: 'ICD-Code ist erforderlich.' }"
+              >
+                <input type="text" class="form-control" formControlName="icd" />
+              </si-form-item>
+            </div>
+            <div class="col-12">
+              <si-form-item
+                label="Beschreibung"
+                [formErrorMapper]="{ required: 'Beschreibung ist erforderlich.' }"
+              >
+                <textarea
+                  class="form-control"
+                  formControlName="description"
+                  rows="3"
+                  placeholder="Kurzbeschreibung der Krankheit"
+                ></textarea>
+              </si-form-item>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="section-heading mb-5">Klassifikation</h5>
+          <div class="row g-5">
+            <div class="col-12 col-md-6">
+              <si-form-item label="Körperregionen" [required]="true">
+                <si-select
+                  class="w-100"
+                  multi
+                  placeholder="Regionen auswählen"
+                  [options]="bodyRegionsOptions"
+                  [(value)]="bodyRegionsSelected"
+                />
+              </si-form-item>
+              @if (submitted() && bodyRegionsSelected.length === 0) {
+                <div class="invalid-select-feedback">
+                  Mindestens eine Körperregion ist erforderlich.
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <si-form-item label="Körpersysteme" [required]="true">
+                <si-select
+                  class="w-100"
+                  multi
+                  placeholder="Systeme auswählen"
+                  [options]="bodySystemsOptions"
+                  [(value)]="bodySystemsSelected"
+                />
+              </si-form-item>
+              @if (submitted() && bodySystemsSelected.length === 0) {
+                <div class="invalid-select-feedback">
+                  Mindestens ein Körpersystem ist erforderlich.
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <si-form-item label="VINDICATE-Kategorie" [required]="true">
+                <si-select
+                  class="w-100"
+                  multi
+                  placeholder="Kategorien auswählen"
+                  [options]="vindicateCategoriesOptions"
+                  [(value)]="vindicateCategoriesSelected"
+                />
+              </si-form-item>
+              @if (submitted() && vindicateCategoriesSelected.length === 0) {
+                <div class="invalid-select-feedback">
+                  Mindestens eine VINDICATE-Kategorie ist erforderlich.
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <si-form-item label="Osteopathisches Modell" [required]="true">
+                <si-select
+                  class="w-100"
+                  multi
+                  placeholder="Modelle auswählen"
+                  [options]="osteopathicModelsOptions"
+                  [(value)]="osteopathicModelsSelected"
+                />
+              </si-form-item>
+              @if (submitted() && osteopathicModelsSelected.length === 0) {
+                <div class="invalid-select-feedback">
+                  Mindestens ein osteopathisches Modell ist erforderlich.
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <si-form-item label="Symptome" [required]="true">
+                <si-select
+                  class="w-100"
+                  multi
+                  placeholder="Symptome auswählen"
+                  [options]="symptomsOptions"
+                  [(value)]="symptomsSelected"
+                />
+              </si-form-item>
+              @if (submitted() && symptomsSelected.length === 0) {
+                <div class="invalid-select-feedback">Mindestens ein Symptom ist erforderlich.</div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="section-heading mb-5">Klinische Angaben</h5>
+          <div class="d-flex flex-column gap-4">
+            <si-form-item
+              label="Ätiologie"
+              [formErrorMapper]="{ required: 'Ätiologie ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="etiology"
+                rows="3"
+                placeholder="Ursachen und Risikofaktoren"
+              ></textarea>
+            </si-form-item>
+            <si-form-item
+              label="Pathogenese"
+              [formErrorMapper]="{ required: 'Pathogenese ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="pathogenesis"
+                rows="3"
+                placeholder="Entstehungsmechanismus"
+              ></textarea>
+            </si-form-item>
+            <si-form-item
+              label="Häufigkeit"
+              [formErrorMapper]="{ required: 'Häufigkeit ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="frequency"
+                rows="2"
+                placeholder="Epidemiologische Angaben"
+              ></textarea>
+            </si-form-item>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="section-heading mb-5">Diagnostik &amp; Prognose</h5>
+          <div class="d-flex flex-column gap-4">
+            <si-form-item
+              label="Red Flags"
+              [formErrorMapper]="{ required: 'Red Flags sind erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="redFlags"
+                rows="2"
+                placeholder="Warnsymptome und Alarmzeichen"
+              ></textarea>
+            </si-form-item>
+            <si-form-item
+              label="Diagnostik"
+              [formErrorMapper]="{ required: 'Diagnostik ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="diagnostics"
+                rows="3"
+                placeholder="Diagnostische Verfahren und Tests"
+              ></textarea>
+            </si-form-item>
+            <si-form-item
+              label="Prognose"
+              [formErrorMapper]="{ required: 'Prognose ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="prognosis"
+                rows="3"
+                placeholder="Verlauf und Heilungsaussichten"
+              ></textarea>
+            </si-form-item>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h5 class="section-heading mb-5">Therapie</h5>
+          <div class="d-flex flex-column gap-4">
+            <si-form-item
+              label="Therapie"
+              [formErrorMapper]="{ required: 'Therapie ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="therapy"
+                rows="3"
+                placeholder="Konservative und operative Behandlungsoptionen"
+              ></textarea>
+            </si-form-item>
+            <si-form-item
+              label="Osteopathische Behandlung"
+              [formErrorMapper]="{ required: 'Osteopathische Behandlung ist erforderlich.' }"
+            >
+              <textarea
+                class="form-control"
+                formControlName="osteopathicTreatment"
+                rows="3"
+                placeholder="Osteopathische Techniken und Behandlungsansätze"
+              ></textarea>
+            </si-form-item>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-4 pb-6">
+        <button
+          type="button"
+          routerLink="/overview"
+          class="btn btn-tertiary"
+          [disabled]="isSubmitting()"
+        >
+          Abbrechen
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Wird gespeichert…
+          } @else {
+            Krankheit anlegen
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
