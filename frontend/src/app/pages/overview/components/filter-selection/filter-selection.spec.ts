@@ -275,14 +275,14 @@ describe('FilterSelectionComponent', () => {
     it('should update filter state service with selected values', async () => {
       await initWithData({ bodyRegions: mockBodyRegions, symptoms: mockSymptoms });
 
-      component['bodyRegionsSelected'] = [1, 2];
-      component['symptomsSelected'] = [2];
+      component['bodyRegionIdsSelected'] = [1, 2];
+      component['symptomIdsSelected'] = [2];
       component.filterOverview();
 
       const activeFilters = filterStateService.activeFilters();
-      expect(activeFilters.bodyRegions).toEqual([1, 2]);
-      expect(activeFilters.symptoms).toEqual([2]);
-      expect(activeFilters.bodySystems).toEqual([]);
+      expect(activeFilters.bodyRegionIds).toEqual([1, 2]);
+      expect(activeFilters.symptomIds).toEqual([2]);
+      expect(activeFilters.bodySystemIds).toEqual([]);
     });
 
     it('should emit filtersChanged', async () => {
@@ -298,32 +298,32 @@ describe('FilterSelectionComponent', () => {
     it('should reset all selections to empty', async () => {
       await initWithData({ bodyRegions: mockBodyRegions });
 
-      component['bodyRegionsSelected'] = [1];
+      component['bodyRegionIdsSelected'] = [1];
       component.filterOverview();
       expect(filterStateService.hasActiveFilters()).toBe(true);
 
       component['clearAllFilters']();
 
-      expect(component['bodyRegionsSelected']).toEqual([]);
-      expect(component['bodySystemsSelected']).toEqual([]);
-      expect(component['vindicateCategoriesSelected']).toEqual([]);
-      expect(component['osteopathicModelsSelected']).toEqual([]);
-      expect(component['symptomsSelected']).toEqual([]);
+      expect(component['bodyRegionIdsSelected']).toEqual([]);
+      expect(component['bodySystemIdsSelected']).toEqual([]);
+      expect(component['vindicateCategoryIdsSelected']).toEqual([]);
+      expect(component['osteopathicModelIdsSelected']).toEqual([]);
+      expect(component['symptomIdsSelected']).toEqual([]);
     });
 
     it('should clear active filters in the service', async () => {
       await initWithData();
 
-      component['bodyRegionsSelected'] = [1];
+      component['bodyRegionIdsSelected'] = [1];
       component.filterOverview();
 
       component['clearAllFilters']();
       expect(filterStateService.activeFilters()).toEqual({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
     });
 
@@ -345,7 +345,7 @@ describe('FilterSelectionComponent', () => {
     it('should be true when at least one filter is selected', async () => {
       await initWithData();
 
-      component['symptomsSelected'] = [1];
+      component['symptomIdsSelected'] = [1];
       component.filterOverview();
       expect(component['hasActiveFilters']()).toBe(true);
     });
@@ -353,7 +353,7 @@ describe('FilterSelectionComponent', () => {
     it('should return to false after clearing filters', async () => {
       await initWithData();
 
-      component['bodyRegionsSelected'] = [1];
+      component['bodyRegionIdsSelected'] = [1];
       component.filterOverview();
       expect(component['hasActiveFilters']()).toBe(true);
 
@@ -365,22 +365,22 @@ describe('FilterSelectionComponent', () => {
   describe('constructor - restore filters from service', () => {
     it('should restore previously active filters on creation', () => {
       filterStateService.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [2],
-        vindicateCategories: [],
-        osteopathicModels: [3],
-        symptoms: [],
+        bodyRegionIds: [1],
+        bodySystemIds: [2],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [3],
+        symptomIds: [],
       });
 
       // Re-create component to trigger constructor (no detectChanges = no HTTP)
       const newFixture = TestBed.createComponent(FilterSelectionComponent);
       const newComponent = newFixture.componentInstance;
 
-      expect(newComponent['bodyRegionsSelected']).toEqual([1]);
-      expect(newComponent['bodySystemsSelected']).toEqual([2]);
-      expect(newComponent['osteopathicModelsSelected']).toEqual([3]);
-      expect(newComponent['vindicateCategoriesSelected']).toEqual([]);
-      expect(newComponent['symptomsSelected']).toEqual([]);
+      expect(newComponent['bodyRegionIdsSelected']).toEqual([1]);
+      expect(newComponent['bodySystemIdsSelected']).toEqual([2]);
+      expect(newComponent['osteopathicModelIdsSelected']).toEqual([3]);
+      expect(newComponent['vindicateCategoryIdsSelected']).toEqual([]);
+      expect(newComponent['symptomIdsSelected']).toEqual([]);
     });
   });
 });

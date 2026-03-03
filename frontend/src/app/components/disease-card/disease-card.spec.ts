@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { SiActionDialogService } from '@siemens/element-ng/action-modal';
+import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
+import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import type { Disease } from '../../models/types';
+import { DiseaseService } from '../../services/disease.service';
 import { DiseaseCardComponent } from './disease-card';
 
 const createDisease = (overrides: Partial<Disease> = {}): Disease => ({
@@ -22,6 +27,10 @@ describe('DiseaseCardComponent', () => {
   let component: DiseaseCardComponent;
   let fixture: ComponentFixture<DiseaseCardComponent>;
 
+  const mockDiseaseService = { delete: vi.fn() };
+  const mockToastService = { showToastNotification: vi.fn() };
+  const mockModalService = { showActionDialog: vi.fn() };
+
   const query = (selector: string): HTMLElement | null =>
     fixture.nativeElement.querySelector(selector);
 
@@ -37,8 +46,17 @@ describe('DiseaseCardComponent', () => {
   };
 
   beforeEach(async () => {
+    mockDiseaseService.delete.mockClear();
+    mockToastService.showToastNotification.mockClear();
+    mockModalService.showActionDialog.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [DiseaseCardComponent],
+      providers: [
+        { provide: DiseaseService, useValue: mockDiseaseService },
+        { provide: SiToastNotificationService, useValue: mockToastService },
+        { provide: SiActionDialogService, useValue: mockModalService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiseaseCardComponent);
@@ -438,6 +456,94 @@ describe('DiseaseCardComponent', () => {
       await component['editDisease']();
 
       expect(navigateSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('delete action', () => {
+    beforeEach(() => {
+      setDisease(createDisease({ id: 5, name: 'Arthrose' }));
+    });
+
+    it('should call diseaseService.delete with the disease id when confirmed', async () => {
+      mockModalService.showActionDialog.mockReturnValue(of('delete'));
+      mockDiseaseService.delete.mockReturnValue(of(undefined));
+
+      component['deleteDisease']();
+      await fixture.whenStable();
+
+      expect(mockDiseaseService.delete).toHaveBeenCalledWith(5);
+    });
+
+    it('should emit deleted event after successful delete', async () => {
+      mockModalService.showActionDialog.mockReturnValue(of('delete'));
+      mockDiseaseService.delete.mockReturnValue(of(undefined));
+      const deletedSpy = vi.fn();
+      component.deleted.subscribe(deletedSpy);
+
+      component['deleteDisease']();
+      await fixture.whenStable();
+
+      expect(deletedSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should show a success toast after successful delete', async () => {
+      mockModalService.showActionDialog.mockReturnValue(of('delete'));
+      mockDiseaseService.delete.mockReturnValue(of(undefined));
+
+      component['deleteDisease']();
+      await fixture.whenStable();
+
+      expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ state: 'success', title: 'Krankheit gelöscht' }),
+      );
+    });
+
+    it('should NOT call delete when user cancels the dialog', () => {
+      mockModalService.showActionDialog.mockReturnValue(of('cancel'));
+
+      component['deleteDisease']();
+
+      expect(mockDiseaseService.delete).not.toHaveBeenCalled();
+    });
+
+    it('should be a no-op when disease is null', () => {
+      setDisease(null);
+      component['deleteDisease']();
+      expect(mockModalService.showActionDialog).not.toHaveBeenCalled();
+    });
+
+    it('should show a 401/403-specific error message on auth failure', async () => {
+      mockModalService.showActionDialog.mockReturnValue(of('delete'));
+      mockDiseaseService.delete.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 403, statusText: 'Forbidden' })),
+      );
+
+      component['deleteDisease']();
+      await fixture.whenStable();
+
+      expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          state: 'danger',
+          message: 'Sie haben keine Berechtigung, diese Krankheit zu löschen.',
+        }),
+      );
+    });
+
+    it('should show a generic error message for non-auth failures', async () => {
+      mockModalService.showActionDialog.mockReturnValue(of('delete'));
+      mockDiseaseService.delete.mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Server Error' })),
+      );
+
+      component['deleteDisease']();
+      await fixture.whenStable();
+
+      expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          state: 'danger',
+          message: 'Beim Löschen ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+        }),
+      );
     });
   });
 });

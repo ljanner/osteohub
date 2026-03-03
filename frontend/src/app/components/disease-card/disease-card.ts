@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { elementEdit, elementDelete } from '@siemens/element-icons';
@@ -11,9 +11,9 @@ import {
 import { addIcons } from '@siemens/element-ng/icon';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
-import { environment } from '../../../environments/environment';
 import type { Disease } from '../../models/types';
 import { AuthService } from '../../services/auth.service';
+import { DiseaseService } from '../../services/disease.service';
 
 @Component({
   selector: 'app-disease-card',
@@ -25,7 +25,7 @@ import { AuthService } from '../../services/auth.service';
   },
 })
 export class DiseaseCardComponent {
-  private http = inject(HttpClient);
+  private diseaseService = inject(DiseaseService);
   private router = inject(Router);
   private toastService = inject(SiToastNotificationService);
   private siModal = inject(SiActionDialogService);
@@ -76,7 +76,7 @@ export class DiseaseCardComponent {
       .subscribe((result) => {
         if (result !== 'delete') return;
 
-        this.http.delete(`${environment.apiBaseUrl}/disease/${disease.id}`).subscribe({
+        this.diseaseService.delete(disease.id).subscribe({
           next: () => {
             this.toastService.showToastNotification({
               state: 'success',

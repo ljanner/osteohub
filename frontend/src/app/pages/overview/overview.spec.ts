@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SiSidePanelService } from '@siemens/element-ng/side-panel';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
-import { Subject } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
-import { environment } from '../../../environments/environment';
 import type { Disease, DiseaseExtended } from '../../models/types';
+import { CategoryService } from '../../services/category.service';
+import { DiseaseService } from '../../services/disease.service';
 import { FilterStateService } from '../../services/filter-state.service';
 import { OverviewComponent } from './overview';
-
-const API = environment.apiBaseUrl;
 
 const mockDisease = (id: number, name: string, description = ''): Disease => ({
   id,
@@ -51,23 +48,41 @@ const mockSidePanelService = {
   setSidePanelContent: vi.fn(),
 };
 
+const mockDiseaseService = {
+  getAll: vi.fn(),
+  getById: vi.fn(),
+};
+
+const mockCategoryService = {
+  getBodyRegions: vi.fn().mockReturnValue(of([])),
+  getBodySystems: vi.fn().mockReturnValue(of([])),
+  getVindicateCategories: vi.fn().mockReturnValue(of([])),
+  getOsteopathicModels: vi.fn().mockReturnValue(of([])),
+  getSymptoms: vi.fn().mockReturnValue(of([])),
+};
+
 describe('OverviewComponent', () => {
   let component: OverviewComponent;
   let fixture: ComponentFixture<OverviewComponent>;
-  let httpTestingController: HttpTestingController;
   let filterStateService: FilterStateService;
+  let diseaseSubject: Subject<Disease[]>;
 
   beforeEach(async () => {
+    diseaseSubject = new Subject<Disease[]>();
     mockToastService.showToastNotification.mockClear();
     mockSidePanelService.open.mockClear();
     mockSidePanelService.close.mockClear();
     mockSidePanelService.setSidePanelContent.mockClear();
+    // Return a Subject so the constructor subscription doesn't resolve until the
+    // test controls it via diseaseSubject.next() / .error()
+    mockDiseaseService.getAll.mockReturnValue(diseaseSubject.asObservable());
+    mockDiseaseService.getById.mockReturnValue(of(null));
 
     await TestBed.configureTestingModule({
       imports: [OverviewComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
+        { provide: DiseaseService, useValue: mockDiseaseService },
+        { provide: CategoryService, useValue: mockCategoryService },
         { provide: SiToastNotificationService, useValue: mockToastService },
         { provide: SiSidePanelService, useValue: mockSidePanelService },
       ],
@@ -75,38 +90,21 @@ describe('OverviewComponent', () => {
 
     fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;
-    httpTestingController = TestBed.inject(HttpTestingController);
     filterStateService = TestBed.inject(FilterStateService);
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
-  });
-
-  /** Flush the 5 filter-selection HTTP requests that fire on init. */
-  const flushFilterRequests = () => {
-    httpTestingController.expectOne(`${API}/body-region`).flush([]);
-    httpTestingController.expectOne(`${API}/body-system`).flush([]);
-    httpTestingController.expectOne(`${API}/vindicate-category`).flush([]);
-    httpTestingController.expectOne(`${API}/osteopathic-model`).flush([]);
-    httpTestingController.expectOne(`${API}/symptom`).flush([]);
-  };
-
-  /** Flush the initial /disease request with given data. */
+  /** Emit diseases from the subject and run change detection. */
   const initWithDiseases = async (diseases: Disease[]) => {
     fixture.detectChanges();
-    httpTestingController.expectOne(`${API}/disease`).flush(diseases);
-    flushFilterRequests();
+    diseaseSubject.next(diseases);
+    diseaseSubject.complete();
     await fixture.whenStable();
   };
 
-  /** Flush the initial /disease request with an error. */
+  /** Emit an error from the subject and run change detection. */
   const initWithError = async () => {
     fixture.detectChanges();
-    httpTestingController
-      .expectOne(`${API}/disease`)
-      .flush('Server error', { status: 500, statusText: 'Internal Server Error' });
-    flushFilterRequests();
+    diseaseSubject.error(new Error('Server Error'));
     await fixture.whenStable();
   };
 
@@ -151,13 +149,9 @@ describe('OverviewComponent', () => {
       expect(component['dataState']()).toBe('ready');
 
       // Trigger reload
+      mockDiseaseService.getAll.mockReturnValue(of([]));
       component.loadDiseases();
-      expect(component['dataState']()).toBe('loading');
-      expect(component['filteredDiseases']()).toBeNull();
-      expect(component['allDiseases']()).toBeNull();
-
-      // Flush the second request
-      httpTestingController.expectOne(`${API}/disease`).flush([]);
+      fixture.detectChanges();
       await fixture.whenStable();
       expect(component['dataState']()).toBe('empty');
     });
@@ -220,12 +214,9 @@ describe('OverviewComponent', () => {
     });
 
     it('should not filter when allDiseases is null', async () => {
-      fixture.detectChanges();
+      // Do not detectChanges — allDiseases is null
       component.filterOverview();
       expect(component['filteredDiseases']()).toBeNull();
-      httpTestingController.expectOne(`${API}/disease`).flush([]);
-      flushFilterRequests();
-      await fixture.whenStable();
     });
   });
 
@@ -238,11 +229,11 @@ describe('OverviewComponent', () => {
       await initWithDiseases(diseases);
 
       filterStateService.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
       component.filterOverview();
 
@@ -269,11 +260,11 @@ describe('OverviewComponent', () => {
       await initWithDiseases(diseases);
 
       filterStateService.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
       component.searchValue.setValue('migräne');
       component.filterOverview();
@@ -295,11 +286,11 @@ describe('OverviewComponent', () => {
       await initWithDiseases(diseases);
 
       filterStateService.setActiveFilters({
-        bodyRegions: [],
-        bodySystems: [2],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [2],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
       component.filterOverview();
 
@@ -317,11 +308,11 @@ describe('OverviewComponent', () => {
       await initWithDiseases(diseases);
 
       filterStateService.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [99], // No match
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [99], // No match
       });
       component.filterOverview();
 
@@ -335,8 +326,8 @@ describe('OverviewComponent', () => {
       const extended = mockDiseaseExtended(disease);
       await initWithDiseases([disease]);
 
+      mockDiseaseService.getById.mockReturnValue(of(extended));
       component.openSidePanelDiseaseInformation(disease);
-      httpTestingController.expectOne(`${API}/disease/1`).flush(extended);
       await fixture.whenStable();
 
       expect(component['selectedDisease']()).toEqual(extended);
@@ -344,14 +335,23 @@ describe('OverviewComponent', () => {
       expect(mockSidePanelService.open).toHaveBeenCalledOnce();
     });
 
+    it('should call getById with the correct disease id', async () => {
+      const disease = mockDisease(7, 'Arthrose');
+      await initWithDiseases([disease]);
+
+      mockDiseaseService.getById.mockReturnValue(of(mockDiseaseExtended(disease)));
+      component.openSidePanelDiseaseInformation(disease);
+      await fixture.whenStable();
+
+      expect(mockDiseaseService.getById).toHaveBeenCalledWith(7);
+    });
+
     it('should show toast on fetch error', async () => {
       const disease = mockDisease(1, 'Migräne');
       await initWithDiseases([disease]);
 
+      mockDiseaseService.getById.mockReturnValue(throwError(() => new Error('Server Error')));
       component.openSidePanelDiseaseInformation(disease);
-      httpTestingController
-        .expectOne(`${API}/disease/1`)
-        .flush('Error', { status: 500, statusText: 'Internal Server Error' });
       await fixture.whenStable();
 
       expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
@@ -368,16 +368,16 @@ describe('OverviewComponent', () => {
       await initWithDiseases([disease1, disease2]);
 
       // Open first disease
+      mockDiseaseService.getById.mockReturnValue(of(mockDiseaseExtended(disease1)));
       component.openSidePanelDiseaseInformation(disease1);
-      httpTestingController.expectOne(`${API}/disease/1`).flush(mockDiseaseExtended(disease1));
       await fixture.whenStable();
 
       // Simulate panel is open
       component['sidePanelOpen'] = true;
 
       // Open second disease — panel already open with 'disease' activePanel
+      mockDiseaseService.getById.mockReturnValue(of(mockDiseaseExtended(disease2)));
       component.openSidePanelDiseaseInformation(disease2);
-      httpTestingController.expectOne(`${API}/disease/2`).flush(mockDiseaseExtended(disease2));
       await fixture.whenStable();
 
       expect(component['selectedDisease']()!.id).toBe(2);

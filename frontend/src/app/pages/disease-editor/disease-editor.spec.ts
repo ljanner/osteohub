@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
+import { Subject, of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
-import { environment } from '../../../environments/environment';
+import { CategoryService } from '../../services/category.service';
+import { DiseaseService } from '../../services/disease.service';
 import { DiseaseEditorComponent } from './disease-editor';
-
-const API = environment.apiBaseUrl;
 
 const mockToastService = {
   showToastNotification: vi.fn(),
@@ -49,44 +47,45 @@ const createActivatedRoute = (id: string | null) => ({
 describe('DiseaseEditorComponent', () => {
   let component: DiseaseEditorComponent;
   let fixture: ComponentFixture<DiseaseEditorComponent>;
-  let http: HttpTestingController;
+
+  const mockDiseaseService = {
+    getById: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  };
+
+  const mockCategoryService = {
+    getBodyRegions: vi.fn().mockReturnValue(of(MOCK_BODY_REGIONS)),
+    getBodySystems: vi.fn().mockReturnValue(of(MOCK_BODY_SYSTEMS)),
+    getVindicateCategories: vi.fn().mockReturnValue(of(MOCK_VINDICATE_CATEGORIES)),
+    getOsteopathicModels: vi.fn().mockReturnValue(of(MOCK_OSTEOPATHIC_MODELS)),
+    getSymptoms: vi.fn().mockReturnValue(of(MOCK_SYMPTOMS)),
+  };
 
   beforeEach(async () => {
     mockToastService.showToastNotification.mockClear();
+    mockDiseaseService.getById.mockReturnValue(of(null));
+    mockDiseaseService.create.mockReturnValue(of({}));
+    mockDiseaseService.update.mockReturnValue(of({}));
 
     await TestBed.configureTestingModule({
       imports: [DiseaseEditorComponent],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         provideRouter([]),
         { provide: ActivatedRoute, useValue: createActivatedRoute(null) },
         { provide: SiToastNotificationService, useValue: mockToastService },
+        { provide: DiseaseService, useValue: mockDiseaseService },
+        { provide: CategoryService, useValue: mockCategoryService },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DiseaseEditorComponent);
     component = fixture.componentInstance;
-    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    http.verify();
-  });
-
-  /** Flush the 5 init requests with mock data. */
-  const flushInitRequests = () => {
-    http.expectOne(`${API}/body-region`).flush(MOCK_BODY_REGIONS);
-    http.expectOne(`${API}/body-system`).flush(MOCK_BODY_SYSTEMS);
-    http.expectOne(`${API}/vindicate-category`).flush(MOCK_VINDICATE_CATEGORIES);
-    http.expectOne(`${API}/osteopathic-model`).flush(MOCK_OSTEOPATHIC_MODELS);
-    http.expectOne(`${API}/symptom`).flush(MOCK_SYMPTOMS);
-  };
-
-  /** Bootstrap the component and flush all init requests. */
+  /** Bootstrap the component (detectChanges triggers ngOnInit). */
   const init = async () => {
     fixture.detectChanges();
-    flushInitRequests();
     await fixture.whenStable();
   };
 
@@ -139,15 +138,10 @@ describe('DiseaseEditorComponent', () => {
     });
 
     it('should show a danger toast when any init request fails', async () => {
-      fixture.detectChanges();
-      http
-        .expectOne(`${API}/body-region`)
-        .flush('error', { status: 500, statusText: 'Server Error' });
-      http.expectOne(`${API}/body-system`).flush(MOCK_BODY_SYSTEMS);
-      http.expectOne(`${API}/vindicate-category`).flush(MOCK_VINDICATE_CATEGORIES);
-      http.expectOne(`${API}/osteopathic-model`).flush(MOCK_OSTEOPATHIC_MODELS);
-      http.expectOne(`${API}/symptom`).flush(MOCK_SYMPTOMS);
-      await fixture.whenStable();
+      mockCategoryService.getBodyRegions.mockReturnValue(
+        throwError(() => new Error('Server Error')),
+      );
+      await init();
 
       expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
         expect.objectContaining({ state: 'danger' }),
@@ -155,15 +149,10 @@ describe('DiseaseEditorComponent', () => {
     });
 
     it('should still set optionsLoaded to true even when a request fails', async () => {
-      fixture.detectChanges();
-      http
-        .expectOne(`${API}/body-region`)
-        .flush('error', { status: 500, statusText: 'Server Error' });
-      http.expectOne(`${API}/body-system`).flush([]);
-      http.expectOne(`${API}/vindicate-category`).flush([]);
-      http.expectOne(`${API}/osteopathic-model`).flush([]);
-      http.expectOne(`${API}/symptom`).flush([]);
-      await fixture.whenStable();
+      mockCategoryService.getBodyRegions.mockReturnValue(
+        throwError(() => new Error('Server Error')),
+      );
+      await init();
 
       expect(component['optionsLoaded']()).toBe(true);
     });
@@ -198,7 +187,7 @@ describe('DiseaseEditorComponent', () => {
     it('should not POST when form controls are empty', async () => {
       await init();
       component['submit']();
-      http.expectNone(`${API}/disease`);
+      expect(mockDiseaseService.create).not.toHaveBeenCalled();
     });
 
     it('should not POST when form is valid but selections are empty', async () => {
@@ -206,7 +195,7 @@ describe('DiseaseEditorComponent', () => {
       fillForm();
       component['bodyRegionsSelected'] = [];
       component['submit']();
-      http.expectNone(`${API}/disease`);
+      expect(mockDiseaseService.create).not.toHaveBeenCalled();
     });
 
     it('should not POST when selections are valid but form is invalid', async () => {
@@ -217,7 +206,7 @@ describe('DiseaseEditorComponent', () => {
       component['osteopathicModelsSelected'] = [4];
       component['symptomsSelected'] = [5];
       component['submit']();
-      http.expectNone(`${API}/disease`);
+      expect(mockDiseaseService.create).not.toHaveBeenCalled();
     });
 
     it('should not POST when already submitting', async () => {
@@ -225,7 +214,7 @@ describe('DiseaseEditorComponent', () => {
       fillForm();
       component['isSubmitting'].set(true);
       component['submit']();
-      http.expectNone(`${API}/disease`);
+      expect(mockDiseaseService.create).not.toHaveBeenCalled();
     });
   });
 
@@ -235,9 +224,7 @@ describe('DiseaseEditorComponent', () => {
       fillForm();
       component['submit']();
 
-      const req = http.expectOne(`${API}/disease`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({
+      expect(mockDiseaseService.create).toHaveBeenCalledWith({
         name: 'Migräne',
         icd: 'G43',
         description: 'Halbseitiger Kopfschmerz',
@@ -255,16 +242,18 @@ describe('DiseaseEditorComponent', () => {
         osteopathicModelIds: [4],
         symptomIds: [5],
       });
-      req.flush({});
     });
 
     it('should set isSubmitting to true while the request is in flight', async () => {
+      const subject = new Subject<object>();
+      mockDiseaseService.create.mockReturnValue(subject.asObservable());
       await init();
       fillForm();
       component['submit']();
 
       expect(component['isSubmitting']()).toBe(true);
-      http.expectOne(`${API}/disease`).flush({});
+      subject.next({});
+      subject.complete();
       await fixture.whenStable();
     });
 
@@ -272,8 +261,6 @@ describe('DiseaseEditorComponent', () => {
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush({});
       await fixture.whenStable();
 
       expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
@@ -285,8 +272,6 @@ describe('DiseaseEditorComponent', () => {
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush({});
       await fixture.whenStable();
 
       expect(component['form'].getRawValue().name).toBe('');
@@ -296,8 +281,6 @@ describe('DiseaseEditorComponent', () => {
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush({});
       await fixture.whenStable();
 
       expect(component['bodyRegionsSelected']).toEqual([]);
@@ -311,8 +294,6 @@ describe('DiseaseEditorComponent', () => {
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush({});
       await fixture.whenStable();
 
       expect(component['submitted']()).toBe(false);
@@ -321,11 +302,12 @@ describe('DiseaseEditorComponent', () => {
 
   describe('submit() - failed POST', () => {
     it('should show a danger toast when POST fails', async () => {
+      mockDiseaseService.create.mockReturnValue(
+        throwError(() => ({ status: 500, statusText: 'Server Error' })),
+      );
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush('error', { status: 500, statusText: 'Server Error' });
       await fixture.whenStable();
 
       expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
@@ -334,22 +316,24 @@ describe('DiseaseEditorComponent', () => {
     });
 
     it('should reset isSubmitting to false when POST fails', async () => {
+      mockDiseaseService.create.mockReturnValue(
+        throwError(() => ({ status: 500, statusText: 'Server Error' })),
+      );
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush('error', { status: 500, statusText: 'Server Error' });
       await fixture.whenStable();
 
       expect(component['isSubmitting']()).toBe(false);
     });
 
     it('should keep form values intact when POST fails', async () => {
+      mockDiseaseService.create.mockReturnValue(
+        throwError(() => ({ status: 500, statusText: 'Server Error' })),
+      );
       await init();
       fillForm();
       component['submit']();
-
-      http.expectOne(`${API}/disease`).flush('error', { status: 500, statusText: 'Server Error' });
       await fixture.whenStable();
 
       expect(component['form'].getRawValue().name).toBe('Migräne');
@@ -389,29 +373,29 @@ describe('DiseaseEditorComponent', () => {
     const setupWithRouteId = async (routeId: string | null) => {
       await TestBed.resetTestingModule();
       mockToastService.showToastNotification.mockClear();
+      mockDiseaseService.create.mockClear();
+      mockDiseaseService.update.mockReturnValue(of({}));
 
       await TestBed.configureTestingModule({
         imports: [DiseaseEditorComponent],
         providers: [
-          provideHttpClient(),
-          provideHttpClientTesting(),
           provideRouter([]),
           { provide: ActivatedRoute, useValue: createActivatedRoute(routeId) },
           { provide: SiToastNotificationService, useValue: mockToastService },
+          { provide: DiseaseService, useValue: mockDiseaseService },
+          { provide: CategoryService, useValue: mockCategoryService },
         ],
       }).compileComponents();
 
       fixture = TestBed.createComponent(DiseaseEditorComponent);
       component = fixture.componentInstance;
-      http = TestBed.inject(HttpTestingController);
     };
 
     it('should load disease details and prefill form in edit mode', async () => {
       await setupWithRouteId('42');
+      mockDiseaseService.getById.mockReturnValue(of(MOCK_EXISTING_DISEASE));
 
       fixture.detectChanges();
-      flushInitRequests();
-      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
       await fixture.whenStable();
 
       expect(component['isEditMode']()).toBe(true);
@@ -426,18 +410,15 @@ describe('DiseaseEditorComponent', () => {
 
     it('should PUT /disease/:id with the correct body in edit mode', async () => {
       await setupWithRouteId('42');
+      mockDiseaseService.getById.mockReturnValue(of(MOCK_EXISTING_DISEASE));
 
       fixture.detectChanges();
-      flushInitRequests();
-      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
       await fixture.whenStable();
 
       component['form'].patchValue({ name: 'Lumbalgie akut' });
       component['submit']();
 
-      const req = http.expectOne(`${API}/disease/42`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual({
+      expect(mockDiseaseService.update).toHaveBeenCalledWith(42, {
         name: 'Lumbalgie akut',
         icd: 'M54.5',
         description: 'Schmerzen im unteren Rücken',
@@ -455,20 +436,17 @@ describe('DiseaseEditorComponent', () => {
         osteopathicModelIds: [4],
         symptomIds: [5],
       });
-      req.flush({});
     });
 
     it('should not reset form fields after successful PUT', async () => {
       await setupWithRouteId('42');
+      mockDiseaseService.getById.mockReturnValue(of(MOCK_EXISTING_DISEASE));
 
       fixture.detectChanges();
-      flushInitRequests();
-      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
       await fixture.whenStable();
 
       component['form'].patchValue({ name: 'Persistenter Name' });
       component['submit']();
-      http.expectOne(`${API}/disease/42`).flush({});
       await fixture.whenStable();
 
       expect(component['form'].getRawValue().name).toBe('Persistenter Name');

@@ -1,5 +1,4 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, linkedSignal, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,15 +13,15 @@ import {
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 import { catchError, forkJoin, of } from 'rxjs';
 
-import { environment } from '../../../../../environments/environment';
 import type {
   BodyRegion,
   BodySystem,
-  FilterCategories,
+  DiseaseRelationsIds,
   VindicateCategory,
   OsteopathicModel,
   Symptom,
 } from '../../../../models/types';
+import { CategoryService } from '../../../../services/category.service';
 import { FilterStateService } from '../../../../services/filter-state.service';
 
 const MOBILE_BREAKPOINT = 576;
@@ -43,7 +42,7 @@ const MOBILE_BREAKPOINT = 576;
   styleUrl: './filter-selection.scss',
 })
 export class FilterSelectionComponent implements OnInit {
-  private http = inject(HttpClient);
+  private categoryService = inject(CategoryService);
   private toastNotificationService = inject(SiToastNotificationService);
   private filterStateService = inject(FilterStateService);
   private destroyRef = inject(DestroyRef);
@@ -57,11 +56,11 @@ export class FilterSelectionComponent implements OnInit {
   protected osteopathicModelsOptions: SelectItem<number>[] = [];
   protected symptomsOptions: SelectItem<number>[] = [];
 
-  protected bodyRegionsSelected: number[] = [];
-  protected bodySystemsSelected: number[] = [];
-  protected vindicateCategoriesSelected: number[] = [];
-  protected osteopathicModelsSelected: number[] = [];
-  protected symptomsSelected: number[] = [];
+  protected bodyRegionIdsSelected: number[] = [];
+  protected bodySystemIdsSelected: number[] = [];
+  protected vindicateCategoryIdsSelected: number[] = [];
+  protected osteopathicModelIdsSelected: number[] = [];
+  protected symptomIdsSelected: number[] = [];
 
   protected readonly hasActiveFilters = linkedSignal(() =>
     this.filterStateService.hasActiveFilters(),
@@ -80,42 +79,40 @@ export class FilterSelectionComponent implements OnInit {
   ngOnInit(): void {
     let hasLoadingError = false;
 
-    forkJoin({
-      bodyRegions: this.http.get<BodyRegion[]>(`${environment.apiBaseUrl}/body-region`).pipe(
+    const categories$ = {
+      bodyRegions: this.categoryService.getBodyRegions().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as BodyRegion[]);
         }),
       ),
-      bodySystems: this.http.get<BodySystem[]>(`${environment.apiBaseUrl}/body-system`).pipe(
+      bodySystems: this.categoryService.getBodySystems().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as BodySystem[]);
         }),
       ),
-      vindicateCategories: this.http
-        .get<VindicateCategory[]>(`${environment.apiBaseUrl}/vindicate-category`)
-        .pipe(
-          catchError(() => {
-            hasLoadingError = true;
-            return of([] as VindicateCategory[]);
-          }),
-        ),
-      osteopathicModels: this.http
-        .get<OsteopathicModel[]>(`${environment.apiBaseUrl}/osteopathic-model`)
-        .pipe(
-          catchError(() => {
-            hasLoadingError = true;
-            return of([] as OsteopathicModel[]);
-          }),
-        ),
-      symptoms: this.http.get<Symptom[]>(`${environment.apiBaseUrl}/symptom`).pipe(
+      vindicateCategories: this.categoryService.getVindicateCategories().pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as VindicateCategory[]);
+        }),
+      ),
+      osteopathicModels: this.categoryService.getOsteopathicModels().pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as OsteopathicModel[]);
+        }),
+      ),
+      symptoms: this.categoryService.getSymptoms().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as Symptom[]);
         }),
       ),
-    })
+    };
+
+    forkJoin(categories$)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
         ({ bodyRegions, bodySystems, vindicateCategories, osteopathicModels, symptoms }) => {
@@ -209,12 +206,12 @@ export class FilterSelectionComponent implements OnInit {
   }
 
   filterOverview(): void {
-    const activeFilters: FilterCategories = {
-      bodyRegions: this.bodyRegionsSelected,
-      bodySystems: this.bodySystemsSelected,
-      vindicateCategories: this.vindicateCategoriesSelected,
-      osteopathicModels: this.osteopathicModelsSelected,
-      symptoms: this.symptomsSelected,
+    const activeFilters: DiseaseRelationsIds = {
+      bodyRegionIds: this.bodyRegionIdsSelected,
+      bodySystemIds: this.bodySystemIdsSelected,
+      vindicateCategoryIds: this.vindicateCategoryIdsSelected,
+      osteopathicModelIds: this.osteopathicModelIdsSelected,
+      symptomIds: this.symptomIdsSelected,
     };
 
     this.filterStateService.setActiveFilters(activeFilters);
@@ -231,10 +228,10 @@ export class FilterSelectionComponent implements OnInit {
   private getActiveFilters(): void {
     const storedActiveFilters = this.filterStateService.activeFilters();
 
-    this.bodyRegionsSelected = [...storedActiveFilters.bodyRegions];
-    this.bodySystemsSelected = [...storedActiveFilters.bodySystems];
-    this.vindicateCategoriesSelected = [...storedActiveFilters.vindicateCategories];
-    this.osteopathicModelsSelected = [...storedActiveFilters.osteopathicModels];
-    this.symptomsSelected = [...storedActiveFilters.symptoms];
+    this.bodyRegionIdsSelected = [...storedActiveFilters.bodyRegionIds];
+    this.bodySystemIdsSelected = [...storedActiveFilters.bodySystemIds];
+    this.vindicateCategoryIdsSelected = [...storedActiveFilters.vindicateCategoryIds];
+    this.osteopathicModelIdsSelected = [...storedActiveFilters.osteopathicModelIds];
+    this.symptomIdsSelected = [...storedActiveFilters.symptomIds];
   }
 }
