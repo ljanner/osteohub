@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, input, output } from '@angular/core';
+import { Router } from '@angular/router';
 import { elementEdit, elementDelete } from '@siemens/element-icons';
 import { SiActionDialogService } from '@siemens/element-ng/action-modal';
 import { SiCardComponent } from '@siemens/element-ng/card';
@@ -25,6 +26,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DiseaseCardComponent {
   private http = inject(HttpClient);
+  private router = inject(Router);
   private toastService = inject(SiToastNotificationService);
   private siModal = inject(SiActionDialogService);
   protected authService = inject(AuthService);
@@ -42,11 +44,24 @@ export class DiseaseCardComponent {
   protected primaryItems: ContentActionBarMainItem[] = [
     {
       type: 'action',
+      label: 'Bearbeiten',
+      icon: this.icons.elementEdit,
+      action: () => this.editDisease(),
+    },
+    {
+      type: 'action',
       label: 'Löschen',
       icon: this.icons.elementDelete,
       action: () => this.deleteDisease(),
     },
   ];
+
+  private editDisease(): void {
+    const disease = this.disease();
+    if (!disease) return;
+
+    void this.router.navigate(['/disease-editor', disease.id]);
+  }
 
   private deleteDisease(): void {
     const disease = this.disease();

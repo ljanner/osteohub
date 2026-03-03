@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { vi } from 'vitest';
 
 import type { Disease } from '../../models/types';
 import { DiseaseCardComponent } from './disease-card';
@@ -413,6 +416,28 @@ describe('DiseaseCardComponent', () => {
         (el) => !el.classList.contains('text-secondary'),
       );
       expect(description?.textContent).toContain('Seitliche Verkrümmung');
+    });
+  });
+
+  describe('edit action', () => {
+    it('should navigate to disease-editor route with disease id', async () => {
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      setDisease(createDisease({ id: 27 }));
+      await component['editDisease']();
+
+      expect(navigateSpy).toHaveBeenCalledWith(['/disease-editor', 27]);
+    });
+
+    it('should be a no-op when disease is null', async () => {
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      setDisease(null);
+      await component['editDisease']();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
 });

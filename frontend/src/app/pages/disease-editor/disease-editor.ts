@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SiFormItemComponent } from '@siemens/element-ng/form';
 import {
   SiSelectComponent,
@@ -17,6 +17,7 @@ import { environment } from '../../../environments/environment';
 import type {
   BodyRegion,
   BodySystem,
+  DiseaseExtended,
   VindicateCategory,
   OsteopathicModel,
   Symptom,
@@ -37,12 +38,16 @@ import type {
 })
 export class DiseaseEditorComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly toastNotificationService = inject(SiToastNotificationService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isSubmitting = signal(false);
   protected readonly optionsLoaded = signal(false);
   protected readonly submitted = signal(false);
+  protected readonly editDiseaseId = signal<number | null>(null);
+  protected readonly isEditMode = computed(() => this.editDiseaseId() !== null);
 
   protected bodyRegionsOptions: SelectItem<number>[] = [];
   protected bodySystemsOptions: SelectItem<number>[] = [];
@@ -74,7 +79,22 @@ export class DiseaseEditorComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const routeDiseaseId = this.parseDiseaseId(this.route.snapshot.paramMap.get('id'));
+    if (routeDiseaseId === 'invalid') {
+      this.toastNotificationService.showToastNotification({
+        state: 'danger',
+        title: 'Ungültige Krankheit',
+        message: 'Die angeforderte Krankheit konnte nicht geladen werden.',
+        timeout: 5000,
+      });
+      void this.router.navigate(['/overview']);
+      return;
+    }
+
+    this.editDiseaseId.set(routeDiseaseId);
+
     let hasLoadingError = false;
+    let diseaseLoadingFailed = false;
 
     forkJoin({
       bodyRegions: this.http.get<BodyRegion[]>(`${environment.apiBaseUrl}/body-region`).pipe(
@@ -111,10 +131,28 @@ export class DiseaseEditorComponent implements OnInit {
           return of([] as Symptom[]);
         }),
       ),
+      disease:
+        routeDiseaseId === null
+          ? of(null)
+          : this.http
+              .get<DiseaseExtended>(`${environment.apiBaseUrl}/disease/${routeDiseaseId}`)
+              .pipe(
+                catchError(() => {
+                  diseaseLoadingFailed = true;
+                  return of(null);
+                }),
+              ),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
-        ({ bodyRegions, bodySystems, vindicateCategories, osteopathicModels, symptoms }) => {
+        ({
+          bodyRegions,
+          bodySystems,
+          vindicateCategories,
+          osteopathicModels,
+          symptoms,
+          disease,
+        }) => {
           this.bodyRegionsOptions = bodyRegions.map((r) => ({
             type: 'option',
             label: r.name,
@@ -140,6 +178,31 @@ export class DiseaseEditorComponent implements OnInit {
             label: s.name,
             value: s.id,
           }));
+
+          if (disease) {
+            this.form.patchValue({
+              name: disease.name,
+              icd: disease.icd,
+              description: disease.description,
+              frequency: disease.frequency,
+              etiology: disease.etiology,
+              pathogenesis: disease.pathogenesis,
+              redFlags: disease.redFlags,
+              diagnostics: disease.diagnostics,
+              therapy: disease.therapy,
+              prognosis: disease.prognosis,
+              osteopathicTreatment: disease.osteopathicTreatment,
+            });
+
+            this.bodyRegionsSelected = disease.bodyRegions.map((region) => region.id);
+            this.bodySystemsSelected = disease.bodySystems.map((system) => system.id);
+            this.vindicateCategoriesSelected = disease.vindicateCategories.map(
+              (category) => category.id,
+            );
+            this.osteopathicModelsSelected = disease.osteopathicModels.map((model) => model.id);
+            this.symptomsSelected = disease.symptoms.map((symptom) => symptom.id);
+          }
+
           this.optionsLoaded.set(true);
 
           if (hasLoadingError) {
@@ -150,9 +213,33 @@ export class DiseaseEditorComponent implements OnInit {
               timeout: 5000,
             });
           }
+
+          if (diseaseLoadingFailed) {
+            this.toastNotificationService.showToastNotification({
+              state: 'danger',
+              title: 'Krankheit konnte nicht geladen werden',
+              message: 'Die Bearbeitung ist derzeit nicht möglich.',
+              timeout: 5000,
+            });
+            void this.router.navigate(['/overview']);
+          }
         },
       );
   }
+
+  private parseDiseaseId(rawDiseaseId: string | null): number | null | 'invalid' {
+    if (rawDiseaseId === null) {
+      return null;
+    }
+
+    const parsedDiseaseId = Number.parseInt(rawDiseaseId, 10);
+    if (Number.isNaN(parsedDiseaseId) || parsedDiseaseId <= 0) {
+      return 'invalid';
+    }
+
+    return parsedDiseaseId;
+  }
+
   protected selectionsValid(): boolean {
     return (
       this.bodyRegionsSelected.length > 0 &&
@@ -169,10 +256,10 @@ export class DiseaseEditorComponent implements OnInit {
     if (this.form.invalid || !this.selectionsValid() || this.isSubmitting()) return;
 
     this.isSubmitting.set(true);
-    const value = this.form.getRawValue();
+    const formValue = this.form.getRawValue();
 
-    const body = {
-      ...value,
+    const requestBody = {
+      ...formValue,
       bodyRegionIds: this.bodyRegionsSelected,
       bodySystemIds: this.bodySystemsSelected,
       vindicateCategoryIds: this.vindicateCategoriesSelected,
@@ -180,36 +267,45 @@ export class DiseaseEditorComponent implements OnInit {
       symptomIds: this.symptomsSelected,
     };
 
-    this.http
-      .post(`${environment.apiBaseUrl}/disease`, body)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.toastNotificationService.showToastNotification({
-            state: 'success',
-            title: 'Krankheit erstellt',
-            message: `${value.name} wurde erfolgreich angelegt.`,
-            timeout: 4000,
-          });
+    const diseaseId = this.editDiseaseId();
+    const saveRequest =
+      diseaseId === null
+        ? this.http.post(`${environment.apiBaseUrl}/disease`, requestBody)
+        : this.http.put(`${environment.apiBaseUrl}/disease/${diseaseId}`, requestBody);
+
+    saveRequest.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.toastNotificationService.showToastNotification({
+          state: 'success',
+          title: diseaseId === null ? 'Krankheit erstellt' : 'Krankheit aktualisiert',
+          message:
+            diseaseId === null
+              ? `${formValue.name} wurde erfolgreich angelegt.`
+              : `${formValue.name} wurde erfolgreich aktualisiert.`,
+          timeout: 4000,
+        });
+
+        if (diseaseId === null) {
           this.form.reset();
           this.bodyRegionsSelected = [];
           this.bodySystemsSelected = [];
           this.vindicateCategoriesSelected = [];
           this.osteopathicModelsSelected = [];
           this.symptomsSelected = [];
-          this.submitted.set(false);
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-          this.toastNotificationService.showToastNotification({
-            state: 'danger',
-            title: 'Fehler beim Erstellen',
-            message:
-              'Die Krankheit konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.',
-            timeout: 5000,
-          });
-        },
-      });
+        }
+
+        this.submitted.set(false);
+        this.isSubmitting.set(false);
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        this.toastNotificationService.showToastNotification({
+          state: 'danger',
+          title: diseaseId === null ? 'Fehler beim Erstellen' : 'Fehler beim Aktualisieren',
+          message: 'Die Krankheit konnte nicht gespeichert werden. Bitte prüfen Sie Ihre Eingaben.',
+          timeout: 5000,
+        });
+      },
+    });
   }
 }

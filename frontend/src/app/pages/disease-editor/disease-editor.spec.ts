@@ -2,7 +2,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 import { vi } from 'vitest';
 
@@ -20,6 +20,31 @@ const MOCK_BODY_SYSTEMS = [{ id: 2, name: 'Nervensystem' }];
 const MOCK_VINDICATE_CATEGORIES = [{ id: 3, name: 'Vascular' }];
 const MOCK_OSTEOPATHIC_MODELS = [{ id: 4, name: 'Biomechanisch' }];
 const MOCK_SYMPTOMS = [{ id: 5, name: 'Schmerz' }];
+const MOCK_EXISTING_DISEASE = {
+  id: 42,
+  name: 'Lumbalgie',
+  icd: 'M54.5',
+  description: 'Schmerzen im unteren Rücken',
+  frequency: 'Häufig',
+  etiology: 'Multifaktoriell',
+  pathogenesis: 'Muskuloskelettale Dysfunktion',
+  redFlags: 'Trauma, Fieber, Lähmung',
+  diagnostics: 'Anamnese und klinische Untersuchung',
+  therapy: 'Bewegungstherapie',
+  prognosis: 'Meist gut',
+  osteopathicTreatment: 'Parietale und viszerale Techniken',
+  bodyRegions: [{ id: 1, name: 'Kopf' }],
+  bodySystems: [{ id: 2, name: 'Nervensystem' }],
+  vindicateCategories: [{ id: 3, name: 'Vascular' }],
+  osteopathicModels: [{ id: 4, name: 'Biomechanisch' }],
+  symptoms: [{ id: 5, name: 'Schmerz' }],
+};
+
+const createActivatedRoute = (id: string | null) => ({
+  snapshot: {
+    paramMap: convertToParamMap(id === null ? {} : { id }),
+  },
+});
 
 describe('DiseaseEditorComponent', () => {
   let component: DiseaseEditorComponent;
@@ -35,6 +60,7 @@ describe('DiseaseEditorComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
+        { provide: ActivatedRoute, useValue: createActivatedRoute(null) },
         { provide: SiToastNotificationService, useValue: mockToastService },
       ],
     }).compileComponents();
@@ -356,6 +382,114 @@ describe('DiseaseEditorComponent', () => {
       component['symptomsSelected'] = [5];
       component[field] = [];
       expect(component['selectionsValid']()).toBe(false);
+    });
+  });
+
+  describe('edit mode', () => {
+    const setupWithRouteId = async (routeId: string | null) => {
+      await TestBed.resetTestingModule();
+      mockToastService.showToastNotification.mockClear();
+
+      await TestBed.configureTestingModule({
+        imports: [DiseaseEditorComponent],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideRouter([]),
+          { provide: ActivatedRoute, useValue: createActivatedRoute(routeId) },
+          { provide: SiToastNotificationService, useValue: mockToastService },
+        ],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(DiseaseEditorComponent);
+      component = fixture.componentInstance;
+      http = TestBed.inject(HttpTestingController);
+    };
+
+    it('should load disease details and prefill form in edit mode', async () => {
+      await setupWithRouteId('42');
+
+      fixture.detectChanges();
+      flushInitRequests();
+      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
+      await fixture.whenStable();
+
+      expect(component['isEditMode']()).toBe(true);
+      expect(component['editDiseaseId']()).toBe(42);
+      expect(component['form'].getRawValue().name).toBe('Lumbalgie');
+      expect(component['bodyRegionsSelected']).toEqual([1]);
+      expect(component['bodySystemsSelected']).toEqual([2]);
+      expect(component['vindicateCategoriesSelected']).toEqual([3]);
+      expect(component['osteopathicModelsSelected']).toEqual([4]);
+      expect(component['symptomsSelected']).toEqual([5]);
+    });
+
+    it('should PUT /disease/:id with the correct body in edit mode', async () => {
+      await setupWithRouteId('42');
+
+      fixture.detectChanges();
+      flushInitRequests();
+      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
+      await fixture.whenStable();
+
+      component['form'].patchValue({ name: 'Lumbalgie akut' });
+      component['submit']();
+
+      const req = http.expectOne(`${API}/disease/42`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({
+        name: 'Lumbalgie akut',
+        icd: 'M54.5',
+        description: 'Schmerzen im unteren Rücken',
+        frequency: 'Häufig',
+        etiology: 'Multifaktoriell',
+        pathogenesis: 'Muskuloskelettale Dysfunktion',
+        redFlags: 'Trauma, Fieber, Lähmung',
+        diagnostics: 'Anamnese und klinische Untersuchung',
+        therapy: 'Bewegungstherapie',
+        prognosis: 'Meist gut',
+        osteopathicTreatment: 'Parietale und viszerale Techniken',
+        bodyRegionIds: [1],
+        bodySystemIds: [2],
+        vindicateCategoryIds: [3],
+        osteopathicModelIds: [4],
+        symptomIds: [5],
+      });
+      req.flush({});
+    });
+
+    it('should not reset form fields after successful PUT', async () => {
+      await setupWithRouteId('42');
+
+      fixture.detectChanges();
+      flushInitRequests();
+      http.expectOne(`${API}/disease/42`).flush(MOCK_EXISTING_DISEASE);
+      await fixture.whenStable();
+
+      component['form'].patchValue({ name: 'Persistenter Name' });
+      component['submit']();
+      http.expectOne(`${API}/disease/42`).flush({});
+      await fixture.whenStable();
+
+      expect(component['form'].getRawValue().name).toBe('Persistenter Name');
+      expect(component['bodyRegionsSelected']).toEqual([1]);
+    });
+
+    it('should navigate to overview when route id is invalid', async () => {
+      await setupWithRouteId('invalid-id');
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(navigateSpy).toHaveBeenCalledWith(['/overview']);
+      expect(mockToastService.showToastNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          state: 'danger',
+          title: 'Ungültige Krankheit',
+        }),
+      );
     });
   });
 });
