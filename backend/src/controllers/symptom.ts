@@ -3,7 +3,6 @@ import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 
 import { diseaseSymptoms, relations, symptoms } from '../db/schema';
-import authMiddleware from '../middleware/auth';
 import { parseIdParam, parseNameBody } from './util/request';
 
 type Bindings = {
@@ -18,7 +17,7 @@ symptomController.get('/', async c => {
   return c.json(symptomsList);
 });
 
-symptomController.post('/', authMiddleware(), async c => {
+symptomController.post('/', async c => {
   const name = await parseNameBody(c);
   if (!name) return c.json({ error: 'Invalid request body' }, 400);
 
@@ -28,7 +27,7 @@ symptomController.post('/', authMiddleware(), async c => {
   return c.json(created, 201);
 });
 
-symptomController.patch('/:id', authMiddleware(), async c => {
+symptomController.patch('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
@@ -43,7 +42,7 @@ symptomController.patch('/:id', authMiddleware(), async c => {
   return c.json(updated);
 });
 
-symptomController.delete('/:id', authMiddleware(), async c => {
+symptomController.delete('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 

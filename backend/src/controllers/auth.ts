@@ -2,8 +2,6 @@ import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { sign } from 'hono/jwt';
 
-import authMiddleware from '../middleware/auth';
-
 interface JwtPayload {
   sub: string;
   name: string;
@@ -158,7 +156,7 @@ authController.get('/callback', async c => {
   }
 });
 
-authController.get('/me', authMiddleware(), c => {
+authController.get('/me', c => {
   const { sub, name, picture } = c.get('jwtPayload');
   return c.json({ sub, name, picture });
 });

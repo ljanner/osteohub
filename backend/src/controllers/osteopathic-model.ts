@@ -3,7 +3,6 @@ import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 
 import { diseaseOsteopathicModels, osteopathicModels, relations } from '../db/schema';
-import authMiddleware from '../middleware/auth';
 import { parseIdParam, parseNameBody } from './util/request';
 
 type Bindings = {
@@ -21,7 +20,7 @@ osteopathicModelController.get('/', async c => {
   return c.json(osteopathicModelsList);
 });
 
-osteopathicModelController.post('/', authMiddleware(), async c => {
+osteopathicModelController.post('/', async c => {
   const name = await parseNameBody(c);
   if (!name) return c.json({ error: 'Invalid request body' }, 400);
 
@@ -31,7 +30,7 @@ osteopathicModelController.post('/', authMiddleware(), async c => {
   return c.json(created, 201);
 });
 
-osteopathicModelController.patch('/:id', authMiddleware(), async c => {
+osteopathicModelController.patch('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
@@ -50,7 +49,7 @@ osteopathicModelController.patch('/:id', authMiddleware(), async c => {
   return c.json(updated);
 });
 
-osteopathicModelController.delete('/:id', authMiddleware(), async c => {
+osteopathicModelController.delete('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 

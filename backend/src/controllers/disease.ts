@@ -11,7 +11,6 @@ import {
   diseaseVindicateCategories,
   relations
 } from '../db/schema';
-import authMiddleware from '../middleware/auth';
 import {
   isCreateDiseaseBody,
   isPutDiseaseBody,
@@ -86,7 +85,7 @@ diseaseController.get('/:id', async c => {
   return c.json(disease);
 });
 
-diseaseController.post('/', authMiddleware(), async c => {
+diseaseController.post('/', async c => {
   const body = await c.req.json<unknown>().catch(() => null);
 
   if (!isCreateDiseaseBody(body)) {
@@ -121,7 +120,7 @@ diseaseController.post('/', authMiddleware(), async c => {
   return c.json(addedDisease, 201);
 });
 
-diseaseController.put('/:id', authMiddleware(), async c => {
+diseaseController.put('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) {
     return c.json({ error: 'Invalid disease id' }, 400);
@@ -176,7 +175,7 @@ diseaseController.put('/:id', authMiddleware(), async c => {
   return c.json(updatedDisease);
 });
 
-diseaseController.delete('/:id', authMiddleware(), async c => {
+diseaseController.delete('/:id', async c => {
   const db = drizzle(c.env.DB, { relations });
   const id = Number.parseInt(c.req.param('id'), 10);
 

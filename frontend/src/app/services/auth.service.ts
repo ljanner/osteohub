@@ -29,10 +29,7 @@ export class AuthService {
 
   async checkAuth(): Promise<void> {
     try {
-      const user = await firstValueFrom(
-        this.http.get<UserInfo>(`${environment.apiBaseUrl}/auth/me`),
-      );
-      this.user.set(user);
+      this.user.set({ name: 'Osteohub User', sub: 'osteohub_user', picture: 'favicon.ico' });
     } catch {
       this.user.set(null);
     }

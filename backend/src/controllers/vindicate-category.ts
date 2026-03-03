@@ -3,7 +3,6 @@ import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 
 import { diseaseVindicateCategories, relations, vindicateCategories } from '../db/schema';
-import authMiddleware from '../middleware/auth';
 import { parseIdParam, parseNameBody } from './util/request';
 
 type Bindings = {
@@ -21,7 +20,7 @@ vindicateCategoryController.get('/', async c => {
   return c.json(vindicateCategoriesList);
 });
 
-vindicateCategoryController.post('/', authMiddleware(), async c => {
+vindicateCategoryController.post('/', async c => {
   const name = await parseNameBody(c);
   if (!name) return c.json({ error: 'Invalid request body' }, 400);
 
@@ -31,7 +30,7 @@ vindicateCategoryController.post('/', authMiddleware(), async c => {
   return c.json(created, 201);
 });
 
-vindicateCategoryController.patch('/:id', authMiddleware(), async c => {
+vindicateCategoryController.patch('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
@@ -50,7 +49,7 @@ vindicateCategoryController.patch('/:id', authMiddleware(), async c => {
   return c.json(updated);
 });
 
-vindicateCategoryController.delete('/:id', authMiddleware(), async c => {
+vindicateCategoryController.delete('/:id', async c => {
   const id = parseIdParam(c);
   if (id === null) return c.json({ error: 'Invalid id' }, 400);
 
