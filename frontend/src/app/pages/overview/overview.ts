@@ -129,7 +129,22 @@ export class OverviewComponent {
     return (
       normalizedSearch.length === 0 ||
       disease.name.toLocaleLowerCase().includes(normalizedSearch) ||
-      disease.description.toLocaleLowerCase().includes(normalizedSearch)
+      disease.description.toLocaleLowerCase().includes(normalizedSearch) ||
+      disease.bodyRegions.some((bodyRegion) =>
+        bodyRegion.name.toLocaleLowerCase().includes(normalizedSearch),
+      ) ||
+      disease.bodySystems.some((bodySystem) =>
+        bodySystem.name.toLocaleLowerCase().includes(normalizedSearch),
+      ) ||
+      disease.vindicateCategories.some((vindicateCategory) =>
+        vindicateCategory.name.toLocaleLowerCase().includes(normalizedSearch),
+      ) ||
+      disease.osteopathicModels.some((osteopathicModel) =>
+        osteopathicModel.name.toLocaleLowerCase().includes(normalizedSearch),
+      ) ||
+      disease.symptoms.some((symptom) =>
+        symptom.name.toLocaleLowerCase().includes(normalizedSearch),
+      )
     );
   }
 
