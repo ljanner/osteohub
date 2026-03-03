@@ -12,7 +12,14 @@ import {
   relations
 } from '../db/schema';
 import authMiddleware from '../middleware/auth';
-import { isCreateDiseaseBody } from './util/disease.helpers';
+import {
+  isCreateDiseaseBody,
+  isPutDiseaseBody,
+  mapToDiseaseValues,
+  setDiseaseRelations,
+  validateDiseaseRelationIds
+} from './util/disease.helpers';
+import { parseIdParam } from './util/request';
 
 type Bindings = {
   DB: D1Database;
@@ -88,50 +95,85 @@ diseaseController.post('/', authMiddleware(), async c => {
 
   const db = drizzle(c.env.DB, { relations });
 
+  const relationIdsAreValid = await validateDiseaseRelationIds(db, body);
+  if (!relationIdsAreValid) {
+    return c.json({ error: 'One or more provided IDs do not exist' }, 422);
+  }
+
   let addedDisease: typeof diseases.$inferSelect | undefined;
   try {
-    [addedDisease] = await db
-      .insert(diseases)
-      .values({
-        name: body.name.trim(),
-        icd: body.icd.trim(),
-        description: body.description.trim(),
-        frequency: body.frequency.trim(),
-        etiology: body.etiology.trim(),
-        pathogenesis: body.pathogenesis.trim(),
-        redFlags: body.redFlags.trim(),
-        diagnostics: body.diagnostics.trim(),
-        therapy: body.therapy.trim(),
-        prognosis: body.prognosis.trim(),
-        osteopathicTreatment: body.osteopathicTreatment.trim()
-      })
-      .returning();
+    [addedDisease] = await db.insert(diseases).values(mapToDiseaseValues(body)).returning();
   } catch {
     return c.json({ error: 'Failed to create disease' }, 500);
   }
 
   try {
-    const diseaseId = addedDisease.id;
-    // prettier-ignore
-    const { bodyRegionIds, bodySystemIds, vindicateCategoryIds, osteopathicModelIds, symptomIds } = body;
-    // prettier-ignore
-    await db.batch([
-      db.insert(diseaseBodyRegions).values(bodyRegionIds.map(bodyRegionId => ({ diseaseId, bodyRegionId }))),
-      db.insert(diseaseBodySystems).values(bodySystemIds.map(bodySystemId => ({ diseaseId, bodySystemId }))),
-      db.insert(diseaseVindicateCategories).values(vindicateCategoryIds.map(vindicateCategoryId => ({ diseaseId, vindicateCategoryId }))),
-      db.insert(diseaseOsteopathicModels).values(osteopathicModelIds.map(osteopathicModelId => ({ diseaseId, osteopathicModelId }))),
-      db.insert(diseaseSymptoms).values(symptomIds.map(symptomId => ({ diseaseId, symptomId })))
-    ]);
+    await setDiseaseRelations(db, addedDisease.id, body, false);
   } catch {
     try {
       await db.delete(diseases).where(eq(diseases.id, addedDisease.id));
     } catch {
       return c.json({ error: 'Failed to rollback disease creation' }, 500);
     }
-    return c.json({ error: 'One or more provided IDs do not exist' }, 422);
+    return c.json({ error: 'Failed to create disease relations' }, 500);
   }
 
   return c.json(addedDisease, 201);
+});
+
+diseaseController.put('/:id', authMiddleware(), async c => {
+  const id = parseIdParam(c);
+  if (id === null) {
+    return c.json({ error: 'Invalid disease id' }, 400);
+  }
+
+  const body = await c.req.json<unknown>().catch(() => null);
+  if (!isPutDiseaseBody(body)) {
+    return c.json({ error: 'Invalid request body' }, 400);
+  }
+
+  const db = drizzle(c.env.DB, { relations });
+
+  const existingDisease = await db.query.diseases.findFirst({
+    where: {
+      id
+    },
+    columns: {
+      id: true
+    }
+  });
+
+  if (!existingDisease) {
+    return c.json({ error: 'Disease not found' }, 404);
+  }
+
+  const relationIdsAreValid = await validateDiseaseRelationIds(db, body);
+  if (!relationIdsAreValid) {
+    return c.json({ error: 'One or more provided IDs do not exist' }, 422);
+  }
+
+  let updatedDisease: typeof diseases.$inferSelect | undefined;
+  try {
+    [updatedDisease] = await db
+      .update(diseases)
+      .set(mapToDiseaseValues(body))
+      .where(eq(diseases.id, id))
+      .returning();
+  } catch {
+    return c.json({ error: 'Failed to update disease' }, 500);
+  }
+
+  if (!updatedDisease) {
+    return c.json({ error: 'Disease not found' }, 404);
+  }
+
+  try {
+    await setDiseaseRelations(db, id, body, true);
+  } catch {
+    return c.json({ error: 'Failed to update disease relations' }, 500);
+  }
+
+  return c.json(updatedDisease);
 });
 
 diseaseController.delete('/:id', authMiddleware(), async c => {
