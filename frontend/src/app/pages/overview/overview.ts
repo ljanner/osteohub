@@ -1,5 +1,4 @@
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
-import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -10,10 +9,10 @@ import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import { SiSidePanelContentComponent, SiSidePanelService } from '@siemens/element-ng/side-panel';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
-import { environment } from '../../../environments/environment';
 import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
 import { DiseaseDetailsComponent } from '../../components/disease-details/disease-details';
-import type { Disease, DiseaseExtended, FilterCategories } from '../../models/types';
+import type { Disease, DiseaseExtended, DiseaseRelationsIds } from '../../models/types';
+import { DiseaseService } from '../../services/disease.service';
 import { FilterStateService } from '../../services/filter-state.service';
 import { FilterSelectionComponent } from './components/filter-selection/filter-selection';
 
@@ -33,7 +32,7 @@ import { FilterSelectionComponent } from './components/filter-selection/filter-s
   styleUrl: './overview.scss',
 })
 export class OverviewComponent {
-  private http = inject(HttpClient);
+  private diseaseService = inject(DiseaseService);
   private toastNotificationService = inject(SiToastNotificationService);
   private sidePanelService = inject(SiSidePanelService);
   private filterStateService = inject(FilterStateService);
@@ -71,7 +70,7 @@ export class OverviewComponent {
     this.dataState.set('loading');
     this.filteredDiseases.set(null);
     this.allDiseases.set(null);
-    this.http.get<Disease[]>(`${environment.apiBaseUrl}/disease`).subscribe({
+    this.diseaseService.getAll().subscribe({
       next: (response) => {
         this.allDiseases.set(response);
         if (response.length === 0) {
@@ -116,7 +115,7 @@ export class OverviewComponent {
   private filterDiseases(
     diseases: Disease[],
     normalizedSearch: string,
-    activeFilters: FilterCategories,
+    activeFilters: DiseaseRelationsIds,
   ): Disease[] {
     return diseases.filter(
       (disease) =>
@@ -148,13 +147,13 @@ export class OverviewComponent {
     );
   }
 
-  private matchesCategoryFilters(disease: Disease, activeFilters: FilterCategories): boolean {
+  private matchesCategoryFilters(disease: Disease, activeFilters: DiseaseRelationsIds): boolean {
     return (
-      this.matchesSelection(disease.bodyRegions, activeFilters.bodyRegions) &&
-      this.matchesSelection(disease.bodySystems, activeFilters.bodySystems) &&
-      this.matchesSelection(disease.vindicateCategories, activeFilters.vindicateCategories) &&
-      this.matchesSelection(disease.osteopathicModels, activeFilters.osteopathicModels) &&
-      this.matchesSelection(disease.symptoms, activeFilters.symptoms)
+      this.matchesSelection(disease.bodyRegions, activeFilters.bodyRegionIds) &&
+      this.matchesSelection(disease.bodySystems, activeFilters.bodySystemIds) &&
+      this.matchesSelection(disease.vindicateCategories, activeFilters.vindicateCategoryIds) &&
+      this.matchesSelection(disease.osteopathicModels, activeFilters.osteopathicModelIds) &&
+      this.matchesSelection(disease.symptoms, activeFilters.symptomIds)
     );
   }
 
@@ -167,7 +166,7 @@ export class OverviewComponent {
   }
 
   openSidePanelDiseaseInformation(disease: Disease): void {
-    this.http.get<DiseaseExtended>(`${environment.apiBaseUrl}/disease/${disease.id}`).subscribe({
+    this.diseaseService.getById(disease.id).subscribe({
       next: (response) => {
         this.selectedDisease.set(response);
 

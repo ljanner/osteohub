@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -13,15 +12,15 @@ import {
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 import { catchError, forkJoin, of } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
 import type {
   BodyRegion,
   BodySystem,
-  DiseaseExtended,
   VindicateCategory,
   OsteopathicModel,
   Symptom,
 } from '../../models/types';
+import { CategoryService } from '../../services/category.service';
+import { DiseaseService } from '../../services/disease.service';
 
 @Component({
   selector: 'app-disease-editor',
@@ -37,7 +36,8 @@ import type {
   styleUrl: './disease-editor.scss',
 })
 export class DiseaseEditorComponent implements OnInit {
-  private readonly http = inject(HttpClient);
+  private readonly diseaseService = inject(DiseaseService);
+  private readonly categoryService = inject(CategoryService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly toastNotificationService = inject(SiToastNotificationService);
@@ -97,35 +97,31 @@ export class DiseaseEditorComponent implements OnInit {
     let diseaseLoadingFailed = false;
 
     forkJoin({
-      bodyRegions: this.http.get<BodyRegion[]>(`${environment.apiBaseUrl}/body-region`).pipe(
+      bodyRegions: this.categoryService.getBodyRegions().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as BodyRegion[]);
         }),
       ),
-      bodySystems: this.http.get<BodySystem[]>(`${environment.apiBaseUrl}/body-system`).pipe(
+      bodySystems: this.categoryService.getBodySystems().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as BodySystem[]);
         }),
       ),
-      vindicateCategories: this.http
-        .get<VindicateCategory[]>(`${environment.apiBaseUrl}/vindicate-category`)
-        .pipe(
-          catchError(() => {
-            hasLoadingError = true;
-            return of([] as VindicateCategory[]);
-          }),
-        ),
-      osteopathicModels: this.http
-        .get<OsteopathicModel[]>(`${environment.apiBaseUrl}/osteopathic-model`)
-        .pipe(
-          catchError(() => {
-            hasLoadingError = true;
-            return of([] as OsteopathicModel[]);
-          }),
-        ),
-      symptoms: this.http.get<Symptom[]>(`${environment.apiBaseUrl}/symptom`).pipe(
+      vindicateCategories: this.categoryService.getVindicateCategories().pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as VindicateCategory[]);
+        }),
+      ),
+      osteopathicModels: this.categoryService.getOsteopathicModels().pipe(
+        catchError(() => {
+          hasLoadingError = true;
+          return of([] as OsteopathicModel[]);
+        }),
+      ),
+      symptoms: this.categoryService.getSymptoms().pipe(
         catchError(() => {
           hasLoadingError = true;
           return of([] as Symptom[]);
@@ -134,14 +130,12 @@ export class DiseaseEditorComponent implements OnInit {
       disease:
         routeDiseaseId === null
           ? of(null)
-          : this.http
-              .get<DiseaseExtended>(`${environment.apiBaseUrl}/disease/${routeDiseaseId}`)
-              .pipe(
-                catchError(() => {
-                  diseaseLoadingFailed = true;
-                  return of(null);
-                }),
-              ),
+          : this.diseaseService.getById(routeDiseaseId).pipe(
+              catchError(() => {
+                diseaseLoadingFailed = true;
+                return of(null);
+              }),
+            ),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(
@@ -270,8 +264,8 @@ export class DiseaseEditorComponent implements OnInit {
     const diseaseId = this.editDiseaseId();
     const saveRequest =
       diseaseId === null
-        ? this.http.post(`${environment.apiBaseUrl}/disease`, requestBody)
-        : this.http.put(`${environment.apiBaseUrl}/disease/${diseaseId}`, requestBody);
+        ? this.diseaseService.create(requestBody)
+        : this.diseaseService.update(diseaseId, requestBody);
 
     saveRequest.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {

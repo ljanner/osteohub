@@ -1,29 +1,29 @@
 import { computed, Injectable, signal } from '@angular/core';
 
-import type { FilterCategories } from '../models/types';
+import type { DiseaseRelationsIds } from '../models/types';
 
-const defaultActiveFilters: FilterCategories = {
-  bodyRegions: [],
-  bodySystems: [],
-  vindicateCategories: [],
-  osteopathicModels: [],
-  symptoms: [],
+const defaultActiveFilters: DiseaseRelationsIds = {
+  bodyRegionIds: [],
+  bodySystemIds: [],
+  vindicateCategoryIds: [],
+  osteopathicModelIds: [],
+  symptomIds: [],
 };
 
 @Injectable({ providedIn: 'root' })
 export class FilterStateService {
-  readonly activeFilters = signal<FilterCategories>(defaultActiveFilters);
+  readonly activeFilters = signal<DiseaseRelationsIds>(defaultActiveFilters);
   readonly hasActiveFilters = computed(() => {
     return Object.values(this.activeFilters()).some((filterCategory) => filterCategory.length > 0);
   });
 
-  setActiveFilters(activeFilters: FilterCategories): void {
-    const nextActiveFilters: FilterCategories = {
-      bodyRegions: [...activeFilters.bodyRegions],
-      bodySystems: [...activeFilters.bodySystems],
-      vindicateCategories: [...activeFilters.vindicateCategories],
-      osteopathicModels: [...activeFilters.osteopathicModels],
-      symptoms: [...activeFilters.symptoms],
+  setActiveFilters(activeFilters: DiseaseRelationsIds): void {
+    const nextActiveFilters: DiseaseRelationsIds = {
+      bodyRegionIds: [...activeFilters.bodyRegionIds],
+      bodySystemIds: [...activeFilters.bodySystemIds],
+      vindicateCategoryIds: [...activeFilters.vindicateCategoryIds],
+      osteopathicModelIds: [...activeFilters.osteopathicModelIds],
+      symptomIds: [...activeFilters.symptomIds],
     };
 
     this.activeFilters.set(nextActiveFilters);

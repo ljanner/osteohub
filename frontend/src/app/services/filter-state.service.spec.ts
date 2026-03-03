@@ -16,11 +16,11 @@ describe('FilterStateService', () => {
   describe('activeFilters', () => {
     it('should start with all empty arrays', () => {
       expect(service.activeFilters()).toEqual({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
     });
   });
@@ -28,60 +28,60 @@ describe('FilterStateService', () => {
   describe('setActiveFilters', () => {
     it('should update active filters', () => {
       service.setActiveFilters({
-        bodyRegions: [1, 2],
-        bodySystems: [3],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [5],
+        bodyRegionIds: [1, 2],
+        bodySystemIds: [3],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [5],
       });
 
       expect(service.activeFilters()).toEqual({
-        bodyRegions: [1, 2],
-        bodySystems: [3],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [5],
+        bodyRegionIds: [1, 2],
+        bodySystemIds: [3],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [5],
       });
     });
 
     it('should create copies of the input arrays', () => {
       const input = {
-        bodyRegions: [1],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       };
 
       service.setActiveFilters(input);
-      input.bodyRegions.push(99);
+      input.bodyRegionIds.push(99);
 
-      expect(service.activeFilters().bodyRegions).toEqual([1]);
+      expect(service.activeFilters().bodyRegionIds).toEqual([1]);
     });
 
     it('should overwrite previous filters completely', () => {
       service.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [2],
-        vindicateCategories: [3],
-        osteopathicModels: [4],
-        symptoms: [5],
+        bodyRegionIds: [1],
+        bodySystemIds: [2],
+        vindicateCategoryIds: [3],
+        osteopathicModelIds: [4],
+        symptomIds: [5],
       });
 
       service.setActiveFilters({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [10],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [10],
       });
 
       expect(service.activeFilters()).toEqual({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [10],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [10],
       });
     });
   });
@@ -93,11 +93,11 @@ describe('FilterStateService', () => {
 
     it('should be true when one category has values', () => {
       service.setActiveFilters({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [1],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [1],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
 
       expect(service.hasActiveFilters()).toBe(true);
@@ -105,11 +105,11 @@ describe('FilterStateService', () => {
 
     it('should be true when multiple categories have values', () => {
       service.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [2],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [3],
+        bodyRegionIds: [1],
+        bodySystemIds: [2],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [3],
       });
 
       expect(service.hasActiveFilters()).toBe(true);
@@ -117,11 +117,11 @@ describe('FilterStateService', () => {
 
     it('should be false after clearing filters', () => {
       service.setActiveFilters({
-        bodyRegions: [1],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
 
       expect(service.hasActiveFilters()).toBe(true);
@@ -134,21 +134,21 @@ describe('FilterStateService', () => {
   describe('clearActiveFilters', () => {
     it('should reset all filters to empty arrays', () => {
       service.setActiveFilters({
-        bodyRegions: [1, 2],
-        bodySystems: [3],
-        vindicateCategories: [4],
-        osteopathicModels: [5],
-        symptoms: [6, 7],
+        bodyRegionIds: [1, 2],
+        bodySystemIds: [3],
+        vindicateCategoryIds: [4],
+        osteopathicModelIds: [5],
+        symptomIds: [6, 7],
       });
 
       service.clearActiveFilters();
 
       expect(service.activeFilters()).toEqual({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
     });
 
@@ -156,11 +156,11 @@ describe('FilterStateService', () => {
       service.clearActiveFilters();
 
       expect(service.activeFilters()).toEqual({
-        bodyRegions: [],
-        bodySystems: [],
-        vindicateCategories: [],
-        osteopathicModels: [],
-        symptoms: [],
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
       });
     });
   });

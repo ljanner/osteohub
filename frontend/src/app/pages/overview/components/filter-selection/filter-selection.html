@@ -20,7 +20,7 @@
             labelledby="body-region"
             placeholder="Optionen auswählen"
             [options]="bodyRegionsOptions"
-            [(value)]="bodyRegionsSelected"
+            [(value)]="bodyRegionIdsSelected"
             (valueChange)="filterOverview()"
           />
         </div>
@@ -32,7 +32,7 @@
             labelledby="body-system"
             placeholder="Optionen auswählen"
             [options]="bodySystemsOptions"
-            [(value)]="bodySystemsSelected"
+            [(value)]="bodySystemIdsSelected"
             (valueChange)="filterOverview()"
           />
         </div>
@@ -44,7 +44,7 @@
             labelledby="vindicate-category"
             placeholder="Optionen auswählen"
             [options]="vindicateCategoriesOptions"
-            [(value)]="vindicateCategoriesSelected"
+            [(value)]="vindicateCategoryIdsSelected"
             (valueChange)="filterOverview()"
           />
         </div>
@@ -56,7 +56,7 @@
             labelledby="osteopathic-model"
             placeholder="Optionen auswählen"
             [options]="osteopathicModelsOptions"
-            [(value)]="osteopathicModelsSelected"
+            [(value)]="osteopathicModelIdsSelected"
             (valueChange)="filterOverview()"
           />
         </div>
@@ -68,7 +68,7 @@
             labelledby="symptom"
             placeholder="Optionen auswählen"
             [options]="symptomsOptions"
-            [(value)]="symptomsSelected"
+            [(value)]="symptomIdsSelected"
             (valueChange)="filterOverview()"
           />
         </div>
