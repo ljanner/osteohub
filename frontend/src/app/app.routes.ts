@@ -19,6 +19,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'disease-editor/:id',
+    loadComponent: () =>
+      import('./pages/disease-editor/disease-editor').then((m) => m.DiseaseEditorComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'manage-categories',
     loadComponent: () =>
       import('./pages/manage-categories/manage-categories').then(

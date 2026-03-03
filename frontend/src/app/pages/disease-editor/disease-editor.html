@@ -1,6 +1,6 @@
 <div class="editor-page">
   <div class="d-flex align-items-center gap-4 mb-6">
-    <h1 class="mb-0">Neue Krankheit anlegen</h1>
+    <h1 class="mb-0">{{ isEditMode() ? 'Krankheit bearbeiten' : 'Neue Krankheit anlegen' }}</h1>
   </div>
 
   <form novalidate [formGroup]="form" (ngSubmit)="submit()">
@@ -258,7 +258,7 @@
             ></span>
             Wird gespeichert…
           } @else {
-            Krankheit anlegen
+            Krankheit speichern
           }
         </button>
       </div>
