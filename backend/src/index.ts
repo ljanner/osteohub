@@ -35,7 +35,6 @@ app.use(
 // Public auth routes (login flow)
 app.route('/auth', authController);
 
-// Data routes (public for now — add authMiddleware() to protect individual routes later)
 app.route('/disease', diseaseController);
 app.route('/body-region', bodyRegionController);
 app.route('/body-system', bodySystemController);
