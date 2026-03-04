@@ -11,9 +11,9 @@ import {
 import { addIcons } from '@siemens/element-ng/icon';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
-import type { Disease } from '../../models/types';
-import { AuthService } from '../../services/auth.service';
-import { DiseaseService } from '../../services/disease.service';
+import type { Disease } from '../../../../models/types';
+import { AuthService } from '../../../../services/auth.service';
+import { DiseaseService } from '../../../../services/disease.service';
 
 @Component({
   selector: 'app-disease-card',

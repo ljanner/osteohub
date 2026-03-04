@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-import type { DiseaseExtended } from '../../models/types';
+import type { DiseaseExtended } from '../../../../models/types';
 
 @Component({
   selector: 'app-disease-details',
