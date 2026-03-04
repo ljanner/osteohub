@@ -162,7 +162,7 @@ describe('OverviewComponent', () => {
       const diseases = [mockDisease(1, 'Migräne'), mockDisease(2, 'Skoliose')];
       await initWithDiseases(diseases);
 
-      component.searchValue.setValue('migräne');
+      filterStateService.setSearchTerm('migräne');
       component.filterOverview();
 
       expect(component['filteredDiseases']()?.length).toBe(1);
@@ -176,7 +176,7 @@ describe('OverviewComponent', () => {
       ];
       await initWithDiseases(diseases);
 
-      component.searchValue.setValue('wirbel');
+      filterStateService.setSearchTerm('wirbel');
       component.filterOverview();
 
       expect(component['filteredDiseases']()?.length).toBe(1);
@@ -187,7 +187,7 @@ describe('OverviewComponent', () => {
       const diseases = [mockDisease(1, 'Migräne'), mockDisease(2, 'Skoliose')];
       await initWithDiseases(diseases);
 
-      component.searchValue.setValue('');
+      filterStateService.setSearchTerm('');
       component.filterOverview();
 
       expect(component['filteredDiseases']()?.length).toBe(2);
@@ -197,7 +197,7 @@ describe('OverviewComponent', () => {
       const diseases = [mockDisease(1, 'Migräne')];
       await initWithDiseases(diseases);
 
-      component.searchValue.setValue('  migräne  ');
+      filterStateService.setSearchTerm('  migräne  ');
       component.filterOverview();
 
       expect(component['filteredDiseases']()?.length).toBe(1);
@@ -207,7 +207,7 @@ describe('OverviewComponent', () => {
       const diseases = [mockDisease(1, 'Migräne')];
       await initWithDiseases(diseases);
 
-      component.searchValue.setValue('xyz');
+      filterStateService.setSearchTerm('xyz');
       component.filterOverview();
 
       expect(component['filteredDiseases']()).toEqual([]);
@@ -266,7 +266,7 @@ describe('OverviewComponent', () => {
         osteopathicModelIds: [],
         symptomIds: [],
       });
-      component.searchValue.setValue('migräne');
+      filterStateService.setSearchTerm('migräne');
       component.filterOverview();
 
       expect(component['filteredDiseases']()?.length).toBe(1);

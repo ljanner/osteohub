@@ -1,9 +1,10 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, DestroyRef, inject, linkedSignal, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SiCollapsiblePanelComponent } from '@siemens/element-ng/accordion';
 import { SiResizeObserverDirective } from '@siemens/element-ng/resize-observer';
+import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import {
   SiSelectComponent,
   SiSelectSimpleOptionsDirective,
@@ -32,6 +33,7 @@ const MOBILE_BREAKPOINT = 576;
     NgTemplateOutlet,
     SiCollapsiblePanelComponent,
     SiResizeObserverDirective,
+    SiSearchBarComponent,
     SiSelectComponent,
     SiSelectSimpleOptionsDirective,
     SiSelectMultiValueDirective,
@@ -50,6 +52,8 @@ export class FilterSelectionComponent implements OnInit {
   readonly filtersChanged = output<void>();
   protected readonly isMobile = signal<boolean>(false);
 
+  protected readonly searchValue = new FormControl('', { nonNullable: true });
+
   protected bodyRegionsOptions: SelectItem<number>[] = [];
   protected bodySystemsOptions: SelectItem<number>[] = [];
   protected vindicateCategoriesOptions: SelectItem<number>[] = [];
@@ -63,11 +67,15 @@ export class FilterSelectionComponent implements OnInit {
   protected symptomIdsSelected: number[] = [];
 
   protected readonly hasActiveFilters = linkedSignal(() =>
-    this.filterStateService.hasActiveFilters(),
+    this.filterStateService.hasActiveFiltersOrSearch(),
   );
 
   constructor() {
     this.getActiveFilters();
+    this.searchValue.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+      this.filterStateService.setSearchTerm(value);
+      this.filtersChanged.emit();
+    });
   }
 
   /**
@@ -219,8 +227,9 @@ export class FilterSelectionComponent implements OnInit {
   }
 
   protected clearAllFilters(): void {
-    this.filterStateService.clearActiveFilters();
+    this.filterStateService.clearAll();
     this.getActiveFilters();
+    this.searchValue.setValue('', { emitEvent: false });
 
     this.filtersChanged.emit();
   }

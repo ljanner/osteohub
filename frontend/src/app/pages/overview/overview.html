@@ -1,13 +1,4 @@
-<div class="d-flex flex-column gap-6">
-  <si-search-bar
-    class="flex-grow-1"
-    placeholder="Suchen..."
-    [formControl]="searchValue"
-    [debounceTime]="400"
-    [showIcon]="true"
-  />
-  <app-filter-selection (filtersChanged)="filterOverview()" />
-</div>
+<app-filter-selection (filtersChanged)="filterOverview()" />
 <div class="mt-8 row g-5">
   @let diseasesValue = filteredDiseases();
   @let dataStateValue = dataState();

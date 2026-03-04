@@ -1,13 +1,21 @@
-<div siResizeObserver (siResizeObserver)="onLayoutResize($event)">
-  @if (isMobile()) {
-    <si-collapsible-panel heading="Filter" contentCssClasses="pt-4">
+<div class="d-flex flex-column gap-6">
+  <si-search-bar
+    class="flex-grow-1"
+    placeholder="Suchen..."
+    [formControl]="searchValue"
+    [debounceTime]="400"
+    [showIcon]="true"
+  />
+  <div siResizeObserver (siResizeObserver)="onLayoutResize($event)">
+    @if (isMobile()) {
+      <si-collapsible-panel heading="Filter" contentCssClasses="pt-4">
+        <ng-container [ngTemplateOutlet]="filtersContent" />
+      </si-collapsible-panel>
+    } @else {
       <ng-container [ngTemplateOutlet]="filtersContent" />
-    </si-collapsible-panel>
-  } @else {
-    <ng-container [ngTemplateOutlet]="filtersContent" />
-  }
+    }
+  </div>
 </div>
-
 <ng-template #filtersContent>
   <div class="card">
     <div class="card-body">

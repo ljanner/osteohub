@@ -13,9 +13,15 @@ const defaultActiveFilters: DiseaseRelationsIds = {
 @Injectable({ providedIn: 'root' })
 export class FilterStateService {
   readonly activeFilters = signal<DiseaseRelationsIds>(defaultActiveFilters);
+  readonly searchTerm = signal('');
+
   readonly hasActiveFilters = computed(() => {
     return Object.values(this.activeFilters()).some((filterCategory) => filterCategory.length > 0);
   });
+
+  readonly hasActiveFiltersOrSearch = computed(
+    () => this.hasActiveFilters() || this.searchTerm().trim().length > 0,
+  );
 
   setActiveFilters(activeFilters: DiseaseRelationsIds): void {
     const nextActiveFilters: DiseaseRelationsIds = {
@@ -29,7 +35,16 @@ export class FilterStateService {
     this.activeFilters.set(nextActiveFilters);
   }
 
+  setSearchTerm(term: string): void {
+    this.searchTerm.set(term);
+  }
+
   clearActiveFilters(): void {
     this.setActiveFilters(defaultActiveFilters);
+  }
+
+  clearAll(): void {
+    this.clearActiveFilters();
+    this.searchTerm.set('');
   }
 }

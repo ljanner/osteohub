@@ -334,6 +334,22 @@ describe('FilterSelectionComponent', () => {
       component['clearAllFilters']();
       expect(emitSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('should reset the search value', async () => {
+      await initWithData();
+
+      component['searchValue'].setValue('test', { emitEvent: false });
+      component['clearAllFilters']();
+      expect(component['searchValue'].value).toBe('');
+    });
+
+    it('should clear search term in filter state service', async () => {
+      await initWithData();
+
+      filterStateService.setSearchTerm('test');
+      component['clearAllFilters']();
+      expect(filterStateService.searchTerm()).toBe('');
+    });
   });
 
   describe('hasActiveFilters', () => {
@@ -350,7 +366,14 @@ describe('FilterSelectionComponent', () => {
       expect(component['hasActiveFilters']()).toBe(true);
     });
 
-    it('should return to false after clearing filters', async () => {
+    it('should be true when search has a value', async () => {
+      await initWithData();
+
+      filterStateService.setSearchTerm('test');
+      expect(component['hasActiveFilters']()).toBe(true);
+    });
+
+    it('should return to false after clearing filters and search', async () => {
       await initWithData();
 
       component['bodyRegionIdsSelected'] = [1];
