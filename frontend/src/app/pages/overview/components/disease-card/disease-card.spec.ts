@@ -7,8 +7,8 @@ import { SiToastNotificationService } from '@siemens/element-ng/toast-notificati
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
-import type { Disease } from '../../models/types';
-import { DiseaseService } from '../../services/disease.service';
+import type { Disease } from '../../../../models/types';
+import { DiseaseService } from '../../../../services/disease.service';
 import { DiseaseCardComponent } from './disease-card';
 
 const createDisease = (overrides: Partial<Disease> = {}): Disease => ({

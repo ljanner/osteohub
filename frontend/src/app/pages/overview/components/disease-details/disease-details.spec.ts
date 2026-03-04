@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import type { DiseaseExtended } from '../../models/types';
+import type { DiseaseExtended } from '../../../../models/types';
 import { DiseaseDetailsComponent } from './disease-details';
 
 const createDisease = (overrides: Partial<DiseaseExtended> = {}): DiseaseExtended => ({

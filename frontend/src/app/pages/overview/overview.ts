@@ -9,11 +9,11 @@ import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import { SiSidePanelContentComponent, SiSidePanelService } from '@siemens/element-ng/side-panel';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
-import { DiseaseCardComponent } from '../../components/disease-card/disease-card';
-import { DiseaseDetailsComponent } from '../../components/disease-details/disease-details';
 import type { Disease, DiseaseExtended, DiseaseRelationsIds } from '../../models/types';
 import { DiseaseService } from '../../services/disease.service';
 import { FilterStateService } from '../../services/filter-state.service';
+import { DiseaseCardComponent } from './components/disease-card/disease-card';
+import { DiseaseDetailsComponent } from './components/disease-details/disease-details';
 import { FilterSelectionComponent } from './components/filter-selection/filter-selection';
 
 @Component({
