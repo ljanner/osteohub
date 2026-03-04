@@ -18,6 +18,10 @@ dist/
 tmp/
 out-tsc/
 bazel-out/
+site/
+
+# Python
+.venv/
 
 # Coverage
 coverage/

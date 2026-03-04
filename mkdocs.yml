@@ -1,0 +1,41 @@
+site_name: OsteoHub Dokumentation
+docs_dir: docs
+
+theme:
+  name: material
+  language: de
+  palette:
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Dunkles Design aktivieren
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Helles Design aktivieren
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - search.highlight
+
+markdown_extensions:
+  - plantuml_markdown:
+      server: http://www.plantuml.com/plantuml
+      format: svg
+  - toc:
+      permalink: true
+  - tables
+  - admonition
+  - attr_list
+
+nav:
+  - Startseite: index.md
+  - Projektbeschreibung: Projektbeschreibung.md
+  - Architekturdokumentation: Architekturdokumentation.md
+  - Arbeitsjournal: Arbeitsjournal.md
+  - Fazit & Reflexion: Fazit-Reflexion.md
