@@ -1,0 +1,13 @@
+[project]
+name = "osteohub-docs"
+version = "0.1.0"
+description = "OsteoHub documentation"
+requires-python = ">=3.12"
+dependencies = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material",
+    "plantuml-markdown",
+]
+
+[tool.uv]
+dev-dependencies = []

@@ -2,6 +2,8 @@
 
 OsteoHub ist eine Wissens- und Krankheitsdatenbank für Osteopathie-Studierende.
 
+Rendered documentation: https://ljanner.github.io/osteohub/
+
 ## Voraussetzungen
 
 - Node.js (LTS, empfohlen: 24+)
