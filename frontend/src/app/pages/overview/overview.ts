@@ -1,11 +1,9 @@
 import { CdkPortal, PortalModule } from '@angular/cdk/portal';
 import { Component, DestroyRef, inject, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { elementInfo } from '@siemens/element-icons';
 import { SiEmptyStateComponent } from '@siemens/element-ng/empty-state';
 import { addIcons } from '@siemens/element-ng/icon';
-import { SiSearchBarComponent } from '@siemens/element-ng/search-bar';
 import { SiSidePanelContentComponent, SiSidePanelService } from '@siemens/element-ng/side-panel';
 import { SiToastNotificationService } from '@siemens/element-ng/toast-notification';
 
@@ -21,10 +19,8 @@ import { FilterSelectionComponent } from './components/filter-selection/filter-s
   imports: [
     DiseaseCardComponent,
     FilterSelectionComponent,
-    SiSearchBarComponent,
     SiSidePanelContentComponent,
     SiEmptyStateComponent,
-    ReactiveFormsModule,
     PortalModule,
     DiseaseDetailsComponent,
   ],
@@ -53,13 +49,8 @@ export class OverviewComponent {
     elementInfo,
   });
 
-  searchValue = new FormControl('', { nonNullable: true });
-
   constructor() {
     this.loadDiseases();
-    this.searchValue.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.filterOverview());
     this.sidePanelService.isOpen$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((isOpen) => (this.sidePanelOpen = isOpen));
@@ -109,7 +100,7 @@ export class OverviewComponent {
   }
 
   private normalizeSearchTerm(): string {
-    return this.searchValue.value.trim().toLocaleLowerCase();
+    return this.filterStateService.searchTerm().trim().toLocaleLowerCase();
   }
 
   private filterDiseases(

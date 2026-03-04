@@ -164,4 +164,66 @@ describe('FilterStateService', () => {
       });
     });
   });
+
+  describe('searchTerm', () => {
+    it('should start with an empty string', () => {
+      expect(service.searchTerm()).toBe('');
+    });
+
+    it('should update when setSearchTerm is called', () => {
+      service.setSearchTerm('migräne');
+      expect(service.searchTerm()).toBe('migräne');
+    });
+  });
+
+  describe('hasActiveFiltersOrSearch', () => {
+    it('should be false when no filters and no search', () => {
+      expect(service.hasActiveFiltersOrSearch()).toBe(false);
+    });
+
+    it('should be true when only search has a value', () => {
+      service.setSearchTerm('test');
+      expect(service.hasActiveFiltersOrSearch()).toBe(true);
+    });
+
+    it('should be true when only filters are active', () => {
+      service.setActiveFilters({
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
+      });
+      expect(service.hasActiveFiltersOrSearch()).toBe(true);
+    });
+
+    it('should be false when search is only whitespace', () => {
+      service.setSearchTerm('   ');
+      expect(service.hasActiveFiltersOrSearch()).toBe(false);
+    });
+  });
+
+  describe('clearAll', () => {
+    it('should reset both filters and search term', () => {
+      service.setActiveFilters({
+        bodyRegionIds: [1],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [2],
+      });
+      service.setSearchTerm('test');
+
+      service.clearAll();
+
+      expect(service.activeFilters()).toEqual({
+        bodyRegionIds: [],
+        bodySystemIds: [],
+        vindicateCategoryIds: [],
+        osteopathicModelIds: [],
+        symptomIds: [],
+      });
+      expect(service.searchTerm()).toBe('');
+    });
+  });
 });
