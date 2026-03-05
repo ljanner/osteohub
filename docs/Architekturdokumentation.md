@@ -229,23 +229,33 @@ Guard --> AuthSvc
 @startuml
 skinparam defaultTextAlignment center
 
-package "backend/src" {
-  [index.ts\n(Hono App)] as App
-  package "controllers/" {
-    [auth] as AuthCtrl
-    [disease] as DiseaseCtrl
-    [body-region] as BodyRegionCtrl
-    [body-system] as BodySystemCtrl
-    [vindicate-category] as VindicateCtrl
-    [osteopathic-model] as OsteoCtrl
-    [symptom] as SymptomCtrl
-    [util/] as Util
+package "backend/" {
+  package "src/" {
+    [index.ts\n(Hono App)] as App
+    package "controllers/" as Controllers {
+      [auth] as AuthCtrl
+      [disease] as DiseaseCtrl
+      [body-region] as BodyRegionCtrl
+      [body-system] as BodySystemCtrl
+      [vindicate-category] as VindicateCtrl
+      [osteopathic-model] as OsteoCtrl
+      [symptom] as SymptomCtrl
+      [util/] as Util
+    }
+    package "middleware/" {
+      [auth middleware] as AuthMW
+    }
+    package "db/" {
+      [schema] as Schema
+    }
   }
-  package "middleware/" {
-    [auth middleware] as AuthMW
+
+  package "drizzle/" {
+    [SQL-Migrationen] as Migrations
   }
-  package "db/" {
-    [schema] as Schema
+
+  package ".wrangler/" <<Node>> {
+    database "D1 (lokale SQLite)" as LocalD1
   }
 }
 
@@ -256,14 +266,17 @@ App --> BodySystemCtrl
 App --> VindicateCtrl
 App --> OsteoCtrl
 App --> SymptomCtrl
-DiseaseCtrl --> Util
-DiseaseCtrl --> AuthMW
+DiseaseCtrl -> Util
+DiseaseCtrl -> AuthMW
 BodyRegionCtrl --> AuthMW
 BodySystemCtrl --> AuthMW
 VindicateCtrl --> AuthMW
 OsteoCtrl --> AuthMW
 SymptomCtrl --> AuthMW
 DiseaseCtrl --> Schema
+Schema ..> Migrations : generiert
+Migrations ..> LocalD1 : angewendet via\nWrangler CLI
+Controllers <--> LocalD1: Daten lesen und schreiben
 @enduml
 ```
 
@@ -273,6 +286,8 @@ DiseaseCtrl --> Schema
 | **controllers/** | Je ein Hono-Router pro Ressource (Disease, Body Region, Body System, etc.). Der Auth-Controller verwaltet den Google OAuth Flow, JWT-Ausgabe und Session-Management. `util/` enthält gemeinsame Hilfslogik für Validierung, Mapping und Relationen-Management. |
 | **middleware/**  | JWT-Verifizierung (Cookie-basiert). Schützt alle schreibenden Endpunkte (POST, PUT, PATCH, DELETE); lesende Endpunkte (GET) sind öffentlich.                                                                                                                   |
 | **db/**          | Drizzle-ORM-Schema mit Tabellendefinitionen, Relationen und Indizes. Daraus werden automatisch SQL-Migrationen generiert.                                                                                                                                      |
+| **drizzle/**     | Generierte SQL-Migrationsdateien. Werden via Wrangler CLI auf die lokale oder remote D1-Datenbank angewendet.                                                                                                                                                  |
+| **.wrangler/**   | Von Wrangler automatisch erzeugt (gitignored). Enthält die lokale D1-SQLite-Datei für die Entwicklung.                                                                                                                                                         |
 
 **Schlüsselprinzipien:**
 
