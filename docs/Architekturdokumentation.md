@@ -9,7 +9,7 @@ Dieses Dokument beschreibt die Software-Architektur von **OsteoHub** und orienti
 
 ### 1.1 Aufgabenstellung
 
-OsteoHub ist eine Web-Applikation in Form einer **Krankheits- und Wissensdatenbank** für
+OsteoHub ist eine Web-Applikation in Form einer Krankheits- und Wissensdatenbank für
 Osteopathie-Studierende. Ziel ist es, beim Lernen und beim klinischen Denken zu unterstützen, indem
 Erkrankungen strukturiert erfasst und über Filter sowie Freitextsuche schnell auffindbar gemacht
 werden.
@@ -20,13 +20,13 @@ Die fachlichen Anforderungen sind in der
 
 ### 1.2 Qualitätsziele
 
-| Priorität | Qualitätsziel      | Beschreibung                                                                        |
-| --------- | ------------------ | ----------------------------------------------------------------------------------- |
-| 1         | Usability          | Intuitive Such-/Filterbedienung; aktive Filter                                      |
-| 2         | Security by Design | Schreibzugriffe serverseitig durch JWT-Middleware abgesichert, Admin-Whitelist      |
-| 3         | Responsive Design  | Besucheransicht nutzbar auf Mobile, Tablet und Desktop                              |
-| 4         | Performance        | Such-/Filterinteraktion fühlt sich reaktiv an (Debounce, Client-Side-Filterung)     |
-| 5         | Wartbarkeit        | Klare Trennung Frontend/Backend, typisierte Schnittstellen, automatisiertes Linting |
+| Priorität | Qualitätsziel      | Beschreibung                                                                    |
+| --------- | ------------------ | ------------------------------------------------------------------------------- |
+| 1         | Usability          | Intuitive Such-/Filterbedienung; aktive Filter                                  |
+| 2         | Security by Design | Schreibzugriffe serverseitig durch JWT-Middleware abgesichert, Admin-Whitelist  |
+| 3         | Responsive Design  | Besucheransicht nutzbar auf Mobile, Tablet und Desktop                          |
+| 4         | Performance        | Such-/Filterinteraktion fühlt sich reaktiv an (Debounce, Client-Side-Filterung) |
+| 5         | Wartbarkeit        | Klare Trennung Frontend/Backend, Qualitätsprüfung mit Linting                   |
 
 ### 1.3 Stakeholder
 
@@ -105,9 +105,9 @@ database "Cloudflare D1\n(SQLite DB)" as D1
 rectangle "Google OAuth\n(Extern)" as Google
 
 Besucher --> WebApp : HTTPS (lesen, suchen, filtern)
-WebApp --> API : REST API (JSON über HTTPS)
-API --> D1
-API --> Google
+WebApp <--> API : REST API (JSON über HTTPS)
+API <--> D1
+API <--> Google
 @enduml
 ```
 
@@ -464,7 +464,7 @@ Workers --> D1
 - Migrationen: `pnpm backend:db:apply:local`
 - Seed-Daten: `pnpm backend:db:seed:local`
 
-> Siehe [README.md](README.md) für detaillierte Anweisungen zum Setup und Deployment.
+> Siehe [README.md](https://github.com/ljanner/osteohub/blob/main/README.md) für detaillierte Anweisungen zum Setup und Deployment.
 
 ---
 
@@ -602,7 +602,7 @@ Die Wahl von [**@siemens/element**](https://element.siemens.io/) als Design Syst
 Als Mitarbeiter am Element-Projekt wurde die kürzlich veröffentlichte Open-Source-Variante der
 Design-Library bewusst im Praxiseinsatz erprobt ("Dogfooding"). Ziel war es, die Nutzbarkeit des
 Open-Source-Pakets (@siemens/element-theme + @siemens/element-ng) als externe:r Entwickler:in zu
-validieren - insbesondere, weil intern zusätzliche, nicht quelloffene Pakete existieren.
+validieren - insbesondere, weil intern zusätzliche, nicht Open-Source Packages existieren.
 
 Das Element Theme stellt zudem CSS-Utility-Klassen und Design-Tokens bereit (Farben, Abstände,
 Typografie), die durchgängig genutzt werden.
@@ -695,7 +695,7 @@ separates Admin-Portal zu bauen.
 **Begründung:**
 
 - Maximal 3-5 Admin-Benutzer:innen → ein separates Portal ist unverhältnismässig.
-- Die `AuthService.isLoggedIn()`-Signal steuert, welche UI-Elemente sichtbar sind
+- Das `AuthService.isLoggedIn()`-Signal steuert, welche UI-Elemente sichtbar sind
   (z.B. Bearbeiten/Löschen-Buttons, Navigationslinks).
 - Admin-Routen (`/disease-editor`, `/manage-categories`) sind durch einen `authGuard`
   geschützt und im Router nur für eingeloggte Admins zugänglich.
@@ -807,7 +807,7 @@ Als Verbesserungspotenzial bleibt die vollständige Keyboard-Testabdeckung in al
 
 ---
 
-## Glossar
+## 12. Glossar
 
 | Begriff                | Bedeutung                                                                                                                   |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |

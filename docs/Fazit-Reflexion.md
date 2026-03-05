@@ -35,9 +35,8 @@ Tests entstand ein Setup, das schnelle Feedback-Zyklen ermöglichte.
 
 ### Funktionale Vollständigkeit
 
-Alle Must-User-Stories sind umgesetzt: die öffentliche Krankheitsübersicht mit Suche und Filtern,
-das Admin-CRUD für Krankheiten und Kategorien, sowie die Google-OAuth-Authentifizierung. Die App
-läuft produktiv unter [osteohub.ch](https://osteohub.ch) und wird aktiv von Kommilitonen getestet.
+Alle User-Stories sind umgesetzt und die App läuft produktiv unter [osteohub.ch](https://osteohub.ch)
+und wurde aktiv getestet.
 
 ---
 
@@ -116,6 +115,5 @@ konkreten Lernerfahrungen:
 3. **Fullstack-Denken**: Die Verbindung von Frontend, Backend, Datenbank und Deployment als
    Gesamtsystem zu betrachten, war eine wertvolle Ergänzung zu meiner bisherigen Spezialisierung.
 
-Mit rund 75 investierten Stunden liegt das Projekt im erwarteten Rahmen. Die technischen
-Entscheidungen - insbesondere der Wechsel von Firebase zu Cloudflare - waren rückblickend richtig
-und haben zu einer robusteren und besser wartbaren Lösung geführt.
+Die technischen Entscheidungen - insbesondere der Wechsel von Firebase zu Cloudflare - waren
+rückblickend richtig und haben zu einer robusteren und besser wartbaren Lösung geführt.
