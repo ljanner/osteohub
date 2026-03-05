@@ -6,6 +6,5 @@ import { CategoryListComponent } from './category-list/category-list';
   selector: 'app-manage-categories',
   imports: [CategoryListComponent],
   templateUrl: './manage-categories.html',
-  styleUrl: './manage-categories.scss',
 })
 export class ManageCategoriesComponent {}

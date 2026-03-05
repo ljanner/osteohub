@@ -8,7 +8,6 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   imports: [SiInlineNotificationComponent],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
 })
 export class LoginComponent implements OnInit {
   protected readonly authService = inject(AuthService);
