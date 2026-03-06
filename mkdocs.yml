@@ -5,18 +5,24 @@ theme:
   name: material
   language: de
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Helles Design aktivieren
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: teal
       accent: teal
       toggle:
         icon: material/brightness-7
         name: Dunkles Design aktivieren
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: teal
       accent: teal
       toggle:
         icon: material/brightness-4
-        name: Helles Design aktivieren
+        name: Automatisches Design aktivieren
   features:
     - navigation.sections
     - navigation.top
